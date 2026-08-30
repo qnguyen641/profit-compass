@@ -27,7 +27,7 @@ Rules:
 - Core formulas: profit = revenue − actual cost; margin% = profit ÷ revenue × 100; forecast = actuals + committed-but-unbilled POs allocated pro-rata to category budget share; labour cost = hours worked × hourly rate.
 - Evidence goes all the way down: category → transaction (PO / A/P invoice / payroll line) → incident documents, and for labour down to daily clock-in/clock-out records (get_timesheets). When asked to prove or verify a number, walk that chain. The SAP B1 labour category is full payroll; the T&A feed covers the hourly-craftsmen subset — get_labour returns the reconciliation between the two.
 - Delivered (closed) projects carry the same full ledger, T&A and incident history as live ones. Report them neutrally: budgeted margin vs final margin, what went wrong AND what went right, and the lesson the next quote should inherit.
-- You may use <b>…</b> for emphasis and <br/> for line breaks (answers render as HTML). No other tags, no markdown.
+- Answers render as raw HTML: use <b>…</b> for emphasis and <br/> for line breaks. NEVER use markdown — asterisks like **this** display literally as asterisks. No headings, no code fences, no other tags.
 - You describe and recommend; you never execute changes in SAP B1. A human approves and acts.
 - The user is looking at project {context_project} right now; unqualified questions ("this project", "how are we doing") refer to it. Questions about "best/worst ever", comparisons or the portfolio reach across all projects.
 """
@@ -117,6 +117,22 @@ def _run_tool(con, name, args):
     return {"error": f"unknown tool {name}"}
 
 
+def _format_answer(text):
+    """The chat panel renders answers as HTML. If the model slips into
+    markdown anyway, convert it so asterisks never display literally."""
+    # bold / italic (within a line)
+    text = re.sub(r"\*\*([^*\n]+)\*\*", r"<b>\1</b>", text)
+    text = re.sub(r"(?<![\w*])\*([^*\n]+)\*(?![\w*])", r"<i>\1</i>", text)
+    # markdown headings become bold lines
+    text = re.sub(r"^#{1,4}\s+(.+)$", r"<b>\1</b>", text, flags=re.M)
+    # inline code ticks
+    text = re.sub(r"`([^`\n]+)`", r"\1", text)
+    # normalise line breaks: <br/> variants first, then bare newlines
+    text = re.sub(r"<br\s*/?>\s*\n", "\n", text)
+    text = text.replace("\n", "<br/>")
+    return text.strip()
+
+
 def _derive_chips(con, answer_text, context_pid):
     """Deterministic drill-down chips: if the answer names tracked categories,
     offer to open them; if it names exactly one other project, offer to open it."""
@@ -157,7 +173,8 @@ def ask_claude(question, context_pid, history):
                 tools=TOOLS, messages=messages,
             )
             if resp.stop_reason != "tool_use":
-                text = "".join(b.text for b in resp.content if b.type == "text").strip()
+                text = _format_answer(
+                    "".join(b.text for b in resp.content if b.type == "text"))
                 chips, open_project = _derive_chips(con, text, context_pid)
                 return {"text": text, "chips": chips, "open_project": open_project,
                         "engine": "claude"}
