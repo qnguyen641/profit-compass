@@ -177,10 +177,27 @@ def diagnosis(con, pid):
         verdict = (f"Every tracked category is at or under budget. Forecast margin "
                    f"{pct(final_pct)} against a {pct(s['budget_margin_pct'])} plan.")
     else:
-        commit_txt = (f", and a further {fmt_sgd(b['commit'])} is committed but not yet billed"
-                      if b["commit"] > 0 else "")
-        verdict = (f"{worst['label']} is the largest leak at {fmt_sgd(worst['impact'])}"
-                   f"{commit_txt}. Budget is {burn_pct}% spent against {done_pct:.0f}% delivered.")
+        # A wide burn-vs-progress gap is only distress when the forecast is
+        # slipping too. A fabrication-shaped job commits materials and
+        # subcontracts up front, so spend legitimately runs ahead of delivery.
+        fc_cost = s.get("forecast_final_cost")
+        if fc_cost is None and s.get("forecast_final_margin_pct") is not None:
+            fc_cost = round(s["revenue"] * (1 - s["forecast_final_margin_pct"] / 100))
+        f_burn = round(s["actual_cost"] / fc_cost * 100) if fc_cost else None
+        high_alert = any(a["severity"] == "high" for a in alerts(con, pid))
+        if (burn_pct - done_pct > 25 and margin_drop is not None
+                and margin_drop <= 2.5 and not high_alert):
+            pressure = (f"; {worst['label']} is the only tracked pressure at {fmt_sgd(worst['impact'])}"
+                        if worst else "")
+            verdict = (f"Front-loaded, not overrun: {f_burn or burn_pct}% of the forecast final cost "
+                       f"is already committed at {done_pct:.0f}% delivered — this job buys its "
+                       f"materials and subcontracts up front. Forecast margin {pct(final_pct)} "
+                       f"against a {pct(s['budget_margin_pct'])} plan{pressure}.")
+        else:
+            commit_txt = (f", and a further {fmt_sgd(b['commit'])} is committed but not yet billed"
+                          if b["commit"] > 0 else "")
+            verdict = (f"{worst['label']} is the largest leak at {fmt_sgd(worst['impact'])}"
+                       f"{commit_txt}. Budget is {burn_pct}% spent against {done_pct:.0f}% delivered.")
     return {"pid": pid, "verdict": verdict, "worst": worst,
             "burn_pct": burn_pct, "done_pct": done_pct,
             "margin_drop": margin_drop, "final_pct": final_pct, "is_final": s["final"]}

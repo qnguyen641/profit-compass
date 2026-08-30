@@ -573,6 +573,33 @@ mustReplace(
           + \`<button class="chat-chip" data-suggest="plan-match">Who landed closest to plan?</button>\`)
       + \`<button class="chat-chip" data-suggest="best-ever">Best margin we've ever made?</button>\`;`);
 
+/* ---- 2j. diagnosis knows a front-loaded job from an overrun ------------- */
+// PRJ-004 read "101% spent against 45% delivered" while wearing a HEALTHY
+// badge — because burn-vs-progress assumes spend tracks delivery linearly.
+// When the gap is wide but the forecast holds within 2.5pts of plan and no
+// high alert is open, the verdict now tells the true story: cost committed
+// up front, judged against forecast final cost, with the remaining spend
+// named as the thing to hold.
+mustReplace(
+  `  } else {
+    verdict = \`<b>\${worst.label}</b> is the largest leak at \${fmtSGD(worst.impact)}\`
+      + (b.commit>0 ? \`, and a further \${fmtSGD(b.commit)} is committed but not yet billed\` : '')
+      + \`. Budget is \${burnPct}% spent against \${donePct}% delivered.\`;
+  }`,
+  `  } else {
+    const fcCost = snap.forecast_final_cost != null ? snap.forecast_final_cost
+      : (snap.forecast_final_margin_pct != null ? Math.round(snap.revenue*(1-snap.forecast_final_margin_pct/100)) : null);
+    const fBurn = fcCost ? Math.round(snap.actual_cost/fcCost*100) : null;
+    const highAlert = RISK_ALERTS.some(r=>r.project_id===pid && r.status==='open' && r.severity==='high');
+    if(burnPct - donePct > 25 && marginDrop <= 2.5 && !highAlert){
+      verdict = \`Front-loaded, not overrun: \${fBurn??burnPct}% of the forecast final cost is already committed at \${donePct}% delivered — this job buys its materials and subcontracts up front. Forecast margin \${pct(finalPct)} against a \${pct(snap.budget_margin_pct)} plan\${worst?\`; <b>\${worst.label}</b> is the only tracked pressure at \${fmtSGD(worst.impact)}\`:''}.\`;
+    } else {
+      verdict = \`<b>\${worst.label}</b> is the largest leak at \${fmtSGD(worst.impact)}\`
+        + (b.commit>0 ? \`, and a further \${fmtSGD(b.commit)} is committed but not yet billed\` : '')
+        + \`. Budget is \${burnPct}% spent against \${donePct}% delivered.\`;
+    }
+  }`);
+
 /* ---- 2b. copy tweaks: the answers are no longer scripted ---------------- */
 html = html.replace(/Prototype — answers come from a scripted set\.?/g,
   'AI answers are computed from the workspace database.');
