@@ -17,12 +17,24 @@ Write-Host "==> uploading to $Target"
 ssh $Target "mkdir -p /opt/profit-compass"
 scp "$env:TEMP\profit-compass.tar.gz" "${Target}:/opt/profit-compass/"
 
-Write-Host "==> extracting + building image on server (container NOT started yet)"
+if (Test-Path ".env") {
+    Write-Host "==> uploading local .env (co san ANTHROPIC_API_KEY)"
+    scp ".env" "${Target}:/opt/profit-compass/.env"
+}
+
+Write-Host "==> extracting + building image on server"
 ssh $Target "cd /opt/profit-compass && tar xzf profit-compass.tar.gz && rm profit-compass.tar.gz && ([ -f .env ] || cp .env.example .env) && docker compose build"
 
-Write-Host ""
-Write-Host "==> SETUP DONE. De chay app:"
-Write-Host "    1. ssh $Target"
-Write-Host "    2. nano /opt/profit-compass/.env      # dien ANTHROPIC_API_KEY that"
-Write-Host "    3. cd /opt/profit-compass && docker compose up -d"
-Write-Host "    App: http://5.223.71.214:$Port  (kiem tra: /api/health)"
+if (Test-Path ".env") {
+    Write-Host "==> starting container"
+    ssh $Target "cd /opt/profit-compass && PC_PORT=$Port docker compose up -d && sleep 3 && curl -s localhost:$Port/api/health"
+    Write-Host ""
+    Write-Host "==> App: http://5.223.71.214:$Port  ('ai':'claude' o health = key da nhan)"
+} else {
+    Write-Host ""
+    Write-Host "==> SETUP DONE (chua start vi chua co .env). De chay app:"
+    Write-Host "    1. ssh $Target"
+    Write-Host "    2. nano /opt/profit-compass/.env      # dien ANTHROPIC_API_KEY that"
+    Write-Host "    3. cd /opt/profit-compass && docker compose up -d"
+    Write-Host "    App: http://5.223.71.214:$Port  (kiem tra: /api/health)"
+}
