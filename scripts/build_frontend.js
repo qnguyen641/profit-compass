@@ -749,6 +749,55 @@ function openCommitmentsDrawer(pid){
 // so its plumbing stays intact if it earns its way back.
 mustReplace('      <div class="notif-wrap">', '      <div class="notif-wrap" hidden style="display:none">');
 
+/* ---- 2o. vendor track record inside the driver drawer ------------------- */
+// "Does this supplier reprice often?" — the drawer now answers, honestly:
+// every order from this vendor across all jobs, with its quote/estimate
+// reference and variance where one exists, and "NO QUOTE ON FILE" where it
+// doesn't — because repricing is undetectable without a captured reference.
+{
+  const vhFn = `
+function renderVendorHistory(t){
+  if(!t.vendor || t.vendor.includes('(internal)')) return '';
+  const rows = TRANSACTIONS.filter(x=>x.vendor===t.vendor).slice().sort((a,b)=>a.date<b.date?-1:1);
+  if(rows.length < 2) return '';
+  const withRef = rows.filter(x=>x.quoted_amount);
+  const gap = rows.length - withRef.length;
+  return \`<section class="ad-sec">
+    <div class="section-label">\${t.vendor} across all jobs — \${rows.length} orders</div>
+    <div class="doc-list">
+    \${rows.map(x=>{
+      const pj = project(x.project_id||x.resolved_project_id);
+      const isEst = x.driver && x.driver.cause==='estimate_not_quote';
+      const dq = x.quoted_amount ? Math.round((x.amount-x.quoted_amount)/x.quoted_amount*100) : null;
+      const cur = x.id===t.id;
+      return \`<div class="doc-row"\${cur?' style="background:var(--warn-bg)"':''}>
+        <span class="doc-type">\${x.date.slice(0,7)}</span>
+        <span class="doc-ref">\${x.id}</span>
+        <span class="doc-note">\${pj?pj.name:''} — \${x.description}<br/>
+          <span class="mono" style="font-size:9px;letter-spacing:.04em">\${x.quoted_amount
+            ? \`\${isEst?'ESTIMATED':'QUOTED'} \${fmtSGD(x.quoted_amount)} → PAID \${fmtSGD(x.amount)} <b style="color:\${dq>15?'var(--critical)':dq>0?'var(--warn-ink)':'var(--good)'}">(\${dq>0?'+':''}\${dq}%)</b>\`
+            : \`PAID \${fmtSGD(x.amount)} · <b style="color:var(--text-faint)">NO QUOTE ON FILE</b>\`}</span>
+        </span>
+      </div>\`;
+    }).join('')}
+    </div>
+    <p class="ad-fine">\${withRef.length} of \${rows.length} orders carry a price reference\${gap>0
+      ? \` — whether the other \${gap} were repriced is <b>undetectable</b>. Price behaviour can only be judged where a quote was captured at PO time; the gap is a capture-discipline finding, not evidence of good pricing.\`
+      : '.'}</p>
+  </section>\`;
+}
+`;
+  const at2 = mustIndex(html, '/* =========================================================================\n   COST DRIVER DRAWER');
+  html = html.slice(0, at2) + vhFn + '\n' + html.slice(at2);
+}
+mustReplace(
+  `      \${inc && inc.ot_hours ? \`<section class="ad-sec">
+        <div class="section-label">Overtime it caused</div>`,
+  `      \${renderVendorHistory(t)}
+
+      \${inc && inc.ot_hours ? \`<section class="ad-sec">
+        <div class="section-label">Overtime it caused</div>`);
+
 /* ---- 2b. copy tweaks: the answers are no longer scripted ---------------- */
 html = html.replace(/Prototype — answers come from a scripted set\.?/g,
   'AI answers are computed from the workspace database.');

@@ -348,6 +348,41 @@ def draft_quotes(con):
         "SELECT * FROM draft_quotes ORDER BY rev").fetchall()]
 
 
+def vendor_history(con, vendor):
+    """One supplier's track record across ALL projects: every order, which
+    carried a quote/estimate reference (and the variance against it), and
+    which have no quote on file — where repricing is undetectable."""
+    rows = [dict(r) for r in con.execute(
+        "SELECT id, project_id, resolved_project_id, date, category, vendor, description, "
+        "amount, quoted_amount, driver_cause FROM cost_transactions "
+        "WHERE vendor LIKE ? ORDER BY date", (f"%{vendor}%",)).fetchall()]
+    out = []
+    for r in rows:
+        pid = r["project_id"] or r["resolved_project_id"]
+        p = project(con, pid) if pid else None
+        o = {"id": r["id"], "project": p["name"] if p else pid, "date": r["date"],
+             "category": r["category"], "vendor": r["vendor"],
+             "description": r["description"], "amount": r["amount"]}
+        if r["quoted_amount"]:
+            o["reference_price"] = r["quoted_amount"]
+            o["reference_kind"] = ("budgetary_estimate"
+                                   if r["driver_cause"] == "estimate_not_quote" else "firm_quote")
+            o["variance_vs_reference_pct"] = round(
+                (r["amount"] - r["quoted_amount"]) / r["quoted_amount"] * 100, 1)
+        else:
+            o["reference_price"] = None
+            o["note"] = "no quote reference on file — repricing undetectable"
+        out.append(o)
+    with_ref = [o for o in out if o["reference_price"]]
+    return {"orders": out,
+            "summary": {"total_orders": len(out),
+                        "orders_with_reference": len(with_ref),
+                        "orders_without_reference": len(out) - len(with_ref),
+                        "note": ("price behaviour can only be judged on orders that carry a "
+                                 "quote or estimate reference; the rest is a capture-discipline gap, "
+                                 "not evidence of good pricing")}}
+
+
 def quote_context(con):
     rf = {r["project_id"]: dict(r) for r in con.execute("SELECT * FROM reference_facts").fetchall()}
     return {"quote_request": db.meta(con, "QUOTE_REQUEST"), "reference_facts": rf,

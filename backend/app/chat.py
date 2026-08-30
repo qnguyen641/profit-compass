@@ -69,6 +69,11 @@ TOOLS = [
      "description": "SAP B1 incidents that explain overtime and overspend on a project (late deliveries, scope changes, rework, site restrictions), each with document references and overtime hours by phase.",
      "input_schema": {"type": "object", "properties": {
          "project_id": {"type": "string"}}, "required": ["project_id"]}},
+    {"name": "get_vendor_history",
+     "description": "One supplier's track record across ALL projects: every order, which carried a firm quote or budgetary estimate reference (with the % variance against it), and which have no reference on file — where repricing is undetectable. Use for questions like 'does this vendor reprice often?' or 'how reliable is this supplier?' — and be explicit when the honest answer is that most orders can't be checked.",
+     "input_schema": {"type": "object", "properties": {
+         "vendor": {"type": "string", "description": "vendor name or part of it, e.g. 'Heng Long'"}},
+         "required": ["vendor"]}},
     {"name": "get_quote_context",
      "description": "The open quotation request (PRJ-005, Gardens by the Bay CNY 2027): suggested budget by category, the per-category BUILD-UP lines showing exactly who gets paid for what (each line = mean of the two reference jobs' actuals scaled to the base budget, plus explicit reasoned contingency lines for labour and subcontractor), reference-match scoring inputs, and overrun patterns from the reference projects. Use build_up when asked how a quoted amount accumulates or who the money goes to.",
      "input_schema": {"type": "object", "properties": {}}},
@@ -113,6 +118,8 @@ def _run_tool(con, name, args):
         return {"alerts": engine.alerts(con, args.get("project_id"))}
     if name == "get_incidents":
         return {"incidents": engine.incidents(con, args["project_id"])}
+    if name == "get_vendor_history":
+        return engine.vendor_history(con, args["vendor"])
     if name == "get_quote_context":
         return engine.quote_context(con)
     return {"error": f"unknown tool {name}"}
