@@ -129,6 +129,57 @@ mustReplace(
   'detail:()=>`Permits, insurance and site cleaning all tracked to budget. Confirm the suggested attribution before treating the underspend as real.`',
   'detail:()=>`Permits, insurance and site cleaning all tracked to budget, with a small underspend on the allowance.`');
 
+/* ---- 2d. bridge tie-out + exact rounding -------------------------------- */
+// (1) largest-remainder allocation so the open commitment sums exactly
+//     (kills the S$1,079,999 artifact — forecast now reads S$1,080,000);
+mustReplace(
+  `function forecastOf(pid){
+  const commit = openCommitment(pid);
+  const budgetSum = CATS.reduce((s,c)=>s+budgetOf(pid,c),0);
+  const out = {};
+  CATS.forEach(c=>{ out[c] = actualOf(pid,c) + Math.round(commit * (budgetOf(pid,c)/budgetSum)); });
+  return out;
+}`,
+  `function forecastOf(pid){
+  const commit = openCommitment(pid);
+  const budgetSum = CATS.reduce((s,c)=>s+budgetOf(pid,c),0);
+  // largest-remainder rounding: the allocation sums EXACTLY to the commitment
+  const rows = CATS.map(c=>{ const x = commit * (budgetOf(pid,c)/budgetSum); return { c, v: Math.floor(x), rem: x - Math.floor(x) }; });
+  let left = Math.round(commit - rows.reduce((s,r)=>s+r.v,0));
+  rows.slice().sort((a,b)=>b.rem-a.rem).forEach(r=>{ if(left>0){ r.v++; left--; } });
+  const out = {};
+  rows.forEach(r=>{ out[r.c] = actualOf(pid,r.c) + r.v; });
+  return out;
+}`);
+// (2) the bridge ends now reconcile to the KPI strip: tracked categories
+//     + general overheads = the whole-project totals shown above
+mustReplace(
+  `      <div class="br-ends">
+        <span><b class="num">\${fmtSGD(b.from)}</b><em>planned, \${CATS.length} categories</em></span>
+        <span class="br-arrow">\${iconArrow()}</span>
+        <span class="ra"><b class="num">\${fmtSGD(b.to)}</b><em>\${SNAPSHOTS[pid].final?'final':'forecast'}, \${CATS.length} categories</em></span>
+      </div>`,
+  `      <div class="br-ends">
+        <span><b class="num">\${fmtSGD(b.from)}</b><em>planned, \${CATS.length} tracked categories</em><em style="display:block;margin-top:1px;color:var(--text-faint)">+ \${fmtSGD(tiePlanOH)} overheads = \${fmtSGD(tiePlanTotal)} total plan</em></span>
+        <span class="br-arrow">\${iconArrow()}</span>
+        <span class="ra"><b class="num">\${fmtSGD(b.to)}</b><em>\${SNAPSHOTS[pid].final?'final':'forecast'}, \${CATS.length} tracked categories</em><em style="display:block;margin-top:1px;color:var(--text-faint)">+ \${fmtSGD(tieRightOH)} overheads = \${fmtSGD(tieRightTotal)} \${SNAPSHOTS[pid].final?'final cost':'forecast final cost'}</em></span>
+      </div>`);
+mustReplace(
+  'function renderBridge(b, pid){\n  const span = Math.max(...b.steps.map(s=>Math.abs(s.impact)), 1);',
+  `function renderBridge(b, pid){
+  const span = Math.max(...b.steps.map(s=>Math.abs(s.impact)), 1);
+  const tieSnap = SNAPSHOTS[pid];
+  const tiePlanTotal = budgetTotalCost(pid);
+  const tiePlanOH = tiePlanTotal - b.from;
+  const tieRightTotal = tieSnap.final ? tieSnap.actual_cost
+    : (tieSnap.forecast_final_cost != null ? tieSnap.forecast_final_cost
+       : b.to + (tieSnap.actual_cost - CATS.reduce((s,c)=>s+actualOf(pid,c),0)));
+  const tieRightOH = tieRightTotal - b.to;`);
+// (3) burn-gap gauge explains its own formula on hover
+mustReplace(
+  `<div class="dg-gauge \${d.gap>0?'over':'under'}"><span class="dg-gap">\${d.gap>0?'+':''}\${d.gap}</span><span class="dg-gap-lbl">pt burn<br/>gap</span></div>`,
+  `<div class="dg-gauge \${d.gap>0?'over':'under'}" title="Budget \${d.burnPct}% spent − \${d.donePct}% delivered = \${d.gap>0?'+':''}\${d.gap} points"><span class="dg-gap">\${d.gap>0?'+':''}\${d.gap}</span><span class="dg-gap-lbl">pt burn<br/>gap</span><span class="mono" style="font-size:8.5px;color:var(--text-faint);margin-top:2px">\${d.burnPct}%−\${d.donePct}%</span></div>`);
+
 /* ---- 2c. quote cost-base build-up: who gets paid, for what -------------- */
 const buildupFn = `
 /* Cost-base build-up — each suggested category amount decomposed into the

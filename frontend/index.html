@@ -1164,8 +1164,12 @@ function openCommitment(pid){
 function forecastOf(pid){
   const commit = openCommitment(pid);
   const budgetSum = CATS.reduce((s,c)=>s+budgetOf(pid,c),0);
+  // largest-remainder rounding: the allocation sums EXACTLY to the commitment
+  const rows = CATS.map(c=>{ const x = commit * (budgetOf(pid,c)/budgetSum); return { c, v: Math.floor(x), rem: x - Math.floor(x) }; });
+  let left = Math.round(commit - rows.reduce((s,r)=>s+r.v,0));
+  rows.slice().sort((a,b)=>b.rem-a.rem).forEach(r=>{ if(left>0){ r.v++; left--; } });
   const out = {};
-  CATS.forEach(c=>{ out[c] = actualOf(pid,c) + Math.round(commit * (budgetOf(pid,c)/budgetSum)); });
+  rows.forEach(r=>{ out[r.c] = actualOf(pid,r.c) + r.v; });
   return out;
 }
 
@@ -1749,7 +1753,7 @@ function renderDiagnosis(pid){
         <div class="dg-verdict">
           ${d.isFinal
             ? `<div class="dg-gauge ${d.marginDrop>0?'over':'under'}"><span class="dg-gap">${d.marginDrop>0?'−':'+'}${Math.abs(d.marginDrop)}</span><span class="dg-gap-lbl">pts vs<br/>plan</span></div>`
-            : `<div class="dg-gauge ${d.gap>0?'over':'under'}"><span class="dg-gap">${d.gap>0?'+':''}${d.gap}</span><span class="dg-gap-lbl">pt burn<br/>gap</span></div>`}
+            : `<div class="dg-gauge ${d.gap>0?'over':'under'}" title="Budget ${d.burnPct}% spent − ${d.donePct}% delivered = ${d.gap>0?'+':''}${d.gap} points"><span class="dg-gap">${d.gap>0?'+':''}${d.gap}</span><span class="dg-gap-lbl">pt burn<br/>gap</span><span class="mono" style="font-size:8.5px;color:var(--text-faint);margin-top:2px">${d.burnPct}%−${d.donePct}%</span></div>`}
           <p>${d.verdict}</p>
         </div>
         ${renderBridge(d.bridge, pid)}
@@ -1761,6 +1765,13 @@ function renderDiagnosis(pid){
 
 function renderBridge(b, pid){
   const span = Math.max(...b.steps.map(s=>Math.abs(s.impact)), 1);
+  const tieSnap = SNAPSHOTS[pid];
+  const tiePlanTotal = budgetTotalCost(pid);
+  const tiePlanOH = tiePlanTotal - b.from;
+  const tieRightTotal = tieSnap.final ? tieSnap.actual_cost
+    : (tieSnap.forecast_final_cost != null ? tieSnap.forecast_final_cost
+       : b.to + (tieSnap.actual_cost - CATS.reduce((s,c)=>s+actualOf(pid,c),0)));
+  const tieRightOH = tieRightTotal - b.to;
   const alertByCat = {};
   RISK_ALERTS.filter(r=>r.project_id===pid && r.category).forEach(r=>alertByCat[r.category]=r);
   const rows = b.steps.map(s=>{
@@ -1780,9 +1791,9 @@ function renderBridge(b, pid){
   return `
     <div class="bridge">
       <div class="br-ends">
-        <span><b class="num">${fmtSGD(b.from)}</b><em>planned, ${CATS.length} categories</em></span>
+        <span><b class="num">${fmtSGD(b.from)}</b><em>planned, ${CATS.length} tracked categories</em><em style="display:block;margin-top:1px;color:var(--text-faint)">+ ${fmtSGD(tiePlanOH)} overheads = ${fmtSGD(tiePlanTotal)} total plan</em></span>
         <span class="br-arrow">${iconArrow()}</span>
-        <span class="ra"><b class="num">${fmtSGD(b.to)}</b><em>${SNAPSHOTS[pid].final?'final':'forecast'}, ${CATS.length} categories</em></span>
+        <span class="ra"><b class="num">${fmtSGD(b.to)}</b><em>${SNAPSHOTS[pid].final?'final':'forecast'}, ${CATS.length} tracked categories</em><em style="display:block;margin-top:1px;color:var(--text-faint)">+ ${fmtSGD(tieRightOH)} overheads = ${fmtSGD(tieRightTotal)} ${SNAPSHOTS[pid].final?'final cost':'forecast final cost'}</em></span>
       </div>
       ${rows}
     </div>`;

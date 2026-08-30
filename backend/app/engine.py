@@ -100,12 +100,19 @@ def open_commitment(con, pid):
 
 
 def forecast_by_category(con, pid):
+    """Open commitment allocated pro-rata to budget share, using largest-remainder
+    rounding so the allocation sums EXACTLY to the commitment (no S$1 drift)."""
     cats = _cats(con)
     commit = open_commitment(con, pid)
     budget = category_budgets(con, pid)
     actual = category_actuals(con, pid)
     budget_sum = sum(budget[c] for c in cats)
-    return {c: actual[c] + jsround(commit * (budget[c] / budget_sum)) for c in cats}
+    raw = {c: commit * (budget[c] / budget_sum) for c in cats}
+    alloc = {c: math.floor(raw[c]) for c in cats}
+    left = round(commit - sum(alloc.values()))
+    for c in sorted(cats, key=lambda c: raw[c] - alloc[c], reverse=True)[:left]:
+        alloc[c] += 1
+    return {c: actual[c] + alloc[c] for c in cats}
 
 
 def bridge(con, pid):
@@ -123,9 +130,26 @@ def bridge(con, pid):
     if commit > 0:
         steps.append({"key": "open_po", "label": "Committed, not yet billed",
                       "cat": None, "impact": -commit})
-    return {"from": sum(budget[c] for c in cats),
-            "to": sum(fc[c] for c in cats),
-            "commit": commit, "steps": steps}
+    tracked_from = sum(budget[c] for c in cats)
+    tracked_to = sum(fc[c] for c in cats)
+    # tie-out to the whole-project figures on the KPI strip: the bridge covers
+    # the 5 tracked categories; general overheads sit outside them
+    s = snapshot(con, pid)
+    plan_total = budget_total_cost(con, pid)
+    if s["final"]:
+        right_total = s["actual_cost"]
+    elif s.get("forecast_final_cost") is not None:
+        right_total = s["forecast_final_cost"]
+    else:
+        right_total = tracked_to + (s["actual_cost"] - sum(actual[c] for c in cats))
+    return {"from": tracked_from, "to": tracked_to,
+            "commit": commit, "steps": steps,
+            "tie_out": {"plan_total_cost": plan_total,
+                        "plan_overheads": plan_total - tracked_from,
+                        "right_total_cost": right_total,
+                        "right_overheads": right_total - tracked_to,
+                        "note": "bridge covers the 5 tracked categories; "
+                                "general overheads make up the rest of the totals shown on the KPI strip"}}
 
 
 def diagnosis(con, pid):
