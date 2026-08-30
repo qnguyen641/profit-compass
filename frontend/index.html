@@ -1673,8 +1673,8 @@ function renderScreenB(pid){
   const kpis = `
     <div class="kpi-strip" style="margin-bottom:16px">
       <div class="kpi"><div class="lbl">Revenue</div><div class="val num">${fmtSGD(snap.revenue)}</div><div class="sub">contract_value</div></div>
-      <div class="kpi"><div class="lbl">${isFinal?'Final cost':'Actual cost'}</div><div class="val num">${fmtSGD(snap.actual_cost)}</div><div class="sub">${txnCount?txnCount+' txns + payroll':'ledger total'}</div></div>
-      <div class="kpi"><div class="lbl">Profit</div><div class="val num">${fmtSGD(snap.profit)}</div><div class="sub">revenue − cost</div></div>
+      <div class="kpi"><div class="lbl">${isFinal?'Final cost':'Actual cost'}</div><div class="val num">${fmtSGD(snap.actual_cost)}</div><div class="sub">plan ${fmtSGD(budgetTotalCost(pid))} · ${txnCount?txnCount+' txns + payroll':'ledger'}</div></div>
+      <div class="kpi"><div class="lbl">Profit</div><div class="val num">${fmtSGD(snap.profit)}</div><div class="sub">plan ${fmtSGD(snap.revenue - budgetTotalCost(pid))} · revenue − cost</div></div>
       <div class="kpi ${marginTone}"><div class="lbl">${isFinal?'Final margin':'Margin'}</div><div class="val num">${pct(snap.margin_pct)}</div><div class="sub">plan ${pct(snap.budget_margin_pct)}</div></div>
       <div class="kpi ${fcstTone}"><div class="lbl">${isFinal?'vs plan':'Forecast margin'}</div><div class="val num">${isFinal?(snap.margin_pct-snap.budget_margin_pct>0?'+':'')+(snap.margin_pct-snap.budget_margin_pct).toFixed(1)+' pts':pct(fcst)}</div><div class="sub">${isFinal?'at close':'incl. commitments'}</div></div>
     </div>`;
@@ -1845,6 +1845,16 @@ function renderProgressPanel(pid){
   return `
     <div class="card pad" style="margin-bottom:16px">
       <div class="section-label">${d.isFinal?'Delivered against plan':'Progress against burn'}</div>
+      <div style="display:flex;gap:3px;margin-bottom:14px">${LIFECYCLE_STAGES.map((ph,i)=>{
+        const cur = d.isFinal ? LIFECYCLE_STAGES.length : LIFECYCLE_STAGES.indexOf(p.lifecycle_stage);
+        const st = i<cur ? 'past' : i===cur ? 'current' : 'future';
+        const bar = st==='past' ? 'background:var(--brand);opacity:.35' : st==='current' ? 'background:var(--brand)' : 'background:var(--surface-2);border:1px solid var(--border)';
+        const lbl = st==='current' ? 'color:var(--brand-ink);font-weight:700' : st==='past' ? 'color:var(--text-muted)' : 'color:var(--text-faint)';
+        return `<div style="flex:1;min-width:0" title="${catLabel(ph)}${st==='current'?' — current stage':st==='past'?' — done':''}">
+          <div style="height:6px;border-radius:2px;${bar}"></div>
+          <div class="mono" style="font-size:8.5px;letter-spacing:.04em;text-transform:uppercase;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${lbl}">${ph}</div>
+        </div>`;
+      }).join('')}</div>
       <div class="burn">
         <div class="burn-row">
           <span class="burn-k">Delivered</span>

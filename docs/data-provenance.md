@@ -29,6 +29,12 @@ what needs operational discipline, and what must be built.
 - **T&A job allocation** — hours must be clocked against a project for
   labour cost = hours × rate to allocate. Blueprint §10 already marks the
   T&A system as assumed, not confirmed.
+- **Lifecycle stage** — B1 has no native "stage" on a project; it is a
+  user-defined field (UDF) on the Project master that the PM maintains, or
+  it is derived from the phase tags on recent postings (every transaction
+  and timesheet in this demo carries a phase, so the two can be
+  cross-checked: a "stage = installation" project with dismantling
+  invoices posting is itself a finding).
 
 ## Tier 3 — must be built (not in any ERP)
 

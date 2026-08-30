@@ -635,6 +635,35 @@ mustReplace(
       return \`\${fmtSGD(snap.actual_cost)} of \${fmtSGD(budgetCost)} planned cost is committed with \${100-d.donePct}% of the job still to deliver\`
         + (fcCost ? \` — and \${fb}% of the \${fmtSGD(fcCost)} forecast final cost.\` : '.'); })();`);
 
+/* ---- 2l. the plan in dollars is first-class; stage is a progress bar ---- */
+// (a) the KPI strip carried the plan only as a margin footnote — the planned
+//     cost (S$285,600 for PRJ-004) never appeared anywhere as money. Now
+//     Actual cost and Profit each show their planned value, so the chain
+//     plan -> actual -> forecast is complete on the strip itself.
+mustReplace(
+  `<div class="kpi"><div class="lbl">\${isFinal?'Final cost':'Actual cost'}</div><div class="val num">\${fmtSGD(snap.actual_cost)}</div><div class="sub">\${txnCount?txnCount+' txns + payroll':'ledger total'}</div></div>
+      <div class="kpi"><div class="lbl">Profit</div><div class="val num">\${fmtSGD(snap.profit)}</div><div class="sub">revenue − cost</div></div>`,
+  `<div class="kpi"><div class="lbl">\${isFinal?'Final cost':'Actual cost'}</div><div class="val num">\${fmtSGD(snap.actual_cost)}</div><div class="sub">plan \${fmtSGD(budgetTotalCost(pid))} · \${txnCount?txnCount+' txns + payroll':'ledger'}</div></div>
+      <div class="kpi"><div class="lbl">Profit</div><div class="val num">\${fmtSGD(snap.profit)}</div><div class="sub">plan \${fmtSGD(snap.revenue - budgetTotalCost(pid))} · revenue − cost</div></div>`);
+// (b) lifecycle stage as a segmented progress bar at the top of the
+//     Progress panel: past stages filled, current highlighted, future empty;
+//     a delivered job shows every segment filled
+mustReplace(
+  `      <div class="section-label">\${d.isFinal?'Delivered against plan':'Progress against burn'}</div>
+      <div class="burn">`,
+  `      <div class="section-label">\${d.isFinal?'Delivered against plan':'Progress against burn'}</div>
+      <div style="display:flex;gap:3px;margin-bottom:14px">\${LIFECYCLE_STAGES.map((ph,i)=>{
+        const cur = d.isFinal ? LIFECYCLE_STAGES.length : LIFECYCLE_STAGES.indexOf(p.lifecycle_stage);
+        const st = i<cur ? 'past' : i===cur ? 'current' : 'future';
+        const bar = st==='past' ? 'background:var(--brand);opacity:.35' : st==='current' ? 'background:var(--brand)' : 'background:var(--surface-2);border:1px solid var(--border)';
+        const lbl = st==='current' ? 'color:var(--brand-ink);font-weight:700' : st==='past' ? 'color:var(--text-muted)' : 'color:var(--text-faint)';
+        return \`<div style="flex:1;min-width:0" title="\${catLabel(ph)}\${st==='current'?' — current stage':st==='past'?' — done':''}">
+          <div style="height:6px;border-radius:2px;\${bar}"></div>
+          <div class="mono" style="font-size:8.5px;letter-spacing:.04em;text-transform:uppercase;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;\${lbl}">\${ph}</div>
+        </div>\`;
+      }).join('')}</div>
+      <div class="burn">`);
+
 /* ---- 2b. copy tweaks: the answers are no longer scripted ---------------- */
 html = html.replace(/Prototype — answers come from a scripted set\.?/g,
   'AI answers are computed from the workspace database.');
