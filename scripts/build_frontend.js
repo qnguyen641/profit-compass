@@ -743,6 +743,12 @@ function openCommitmentsDrawer(pid){
   html = html.slice(0, at) + drawerFn + '\n' + html.slice(at);
 }
 
+/* ---- 2n. bell removed (for now): issues live on their projects ---------- */
+// Alerts already surface where they belong — each project's OPEN ISSUES band
+// and its portfolio badge. The cross-portfolio bell is hidden, not deleted,
+// so its plumbing stays intact if it earns its way back.
+mustReplace('      <div class="notif-wrap">', '      <div class="notif-wrap" hidden style="display:none">');
+
 /* ---- 2b. copy tweaks: the answers are no longer scripted ---------------- */
 html = html.replace(/Prototype — answers come from a scripted set\.?/g,
   'AI answers are computed from the workspace database.');
