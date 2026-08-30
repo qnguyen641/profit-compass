@@ -428,7 +428,18 @@ mustReplace(
   CATS.forEach(c=>{ out[c] = actualOf(pid,c) + Math.round(commit * (budgetOf(pid,c)/budgetSum)); });
   return out;
 }`,
-  `function forecastOf(pid){
+  `const OPEN_COMMITMENTS = __DATA__.OPEN_COMMITMENTS || [];
+function openCommitmentsFor(pid){ return OPEN_COMMITMENTS.filter(c=>c.project_id===pid); }
+function forecastOf(pid){
+  const actualBase = {};
+  const itemised = openCommitmentsFor(pid);
+  if(itemised.length){
+    // itemised: each commitment lands in its own category — no pro-rata
+    const out = {};
+    CATS.forEach(c=>out[c]=actualOf(pid,c));
+    itemised.forEach(r=>{ out[r.category] += r.amount; });
+    return out;
+  }
   const commit = openCommitment(pid);
   const budgetSum = CATS.reduce((s,c)=>s+budgetOf(pid,c),0);
   // largest-remainder rounding: the allocation sums EXACTLY to the commitment
@@ -663,6 +674,74 @@ mustReplace(
         </div>\`;
       }).join('')}</div>
       <div class="burn">`);
+
+/* ---- 2m. "Committed, not yet billed" is inspectable --------------------- */
+// The one bar with no drill-down becomes clickable: a drawer lists every
+// commitment (open POs, bookings, approved crew rosters) with vendor,
+// category, due date and amount. openCommitment prefers the itemised sum.
+mustReplace(
+  `function openCommitment(pid){
+  if(pid==='PRJ-001') return OPEN_PO_TOTAL;
+  const s = SNAPSHOTS[pid];
+  if(s.final || s.forecast_final_margin_pct===undefined) return 0;
+  return Math.max(0, Math.round(s.revenue*(1 - s.forecast_final_margin_pct/100)) - s.actual_cost);
+}`,
+  `function openCommitment(pid){
+  const itemised = OPEN_COMMITMENTS.filter(c=>c.project_id===pid);
+  if(itemised.length) return itemised.reduce((s,r)=>s+r.amount,0);
+  const s = SNAPSHOTS[pid];
+  if(s.final || s.forecast_final_margin_pct===undefined) return 0;
+  return Math.max(0, Math.round(s.revenue*(1 - s.forecast_final_margin_pct/100)) - s.actual_cost);
+}`);
+mustReplace(
+  '    return `<div class="br-row${s.cat?\' clickable\':\'\'}" ${s.cat?`data-drill-category="${s.cat}"`:\'\'}>',
+  '    return `<div class="br-row${(s.cat||s.key===\'open_po\')?\' clickable\':\'\'}" ${s.cat?`data-drill-category="${s.cat}"`:\'\'}${s.key===\'open_po\'?` data-open-commitments="${pid}" title="Inspect the open commitments"`:\'\'}>');
+mustReplace(
+  "  document.querySelectorAll('[data-drill-category]').forEach(el=>el.addEventListener('click', ()=> openDrilldown(el.dataset.drillCategory)));",
+  "  document.querySelectorAll('[data-drill-category]').forEach(el=>el.addEventListener('click', ()=> openDrilldown(el.dataset.drillCategory)));\n"
+  + "  document.querySelectorAll('[data-open-commitments]').forEach(el=>el.addEventListener('click', ()=> openCommitmentsDrawer(el.dataset.openCommitments)));");
+{
+  const drawerFn = `
+/* COMMITMENTS DRAWER — the money that is coming but not yet invoiced. */
+function openCommitmentsDrawer(pid){
+  const rows = openCommitmentsFor(pid);
+  const total = rows.length ? rows.reduce((s,r)=>s+r.amount,0) : openCommitment(pid);
+  const KIND_LBL = { open_po:'Open PO', booking:'Booking', crew_roster:'Crew roster' };
+  state.alertOpen = 'commit:'+pid;
+  const dr = document.getElementById('alertDrawer');
+  dr.innerHTML = \`
+    <div class="ad-head">
+      <button class="icon-btn" id="adClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></button>
+      <span class="a-sev" style="color:var(--warn-ink);background:var(--warn-bg);border-color:var(--warn)">Committed</span>
+      <span class="ad-id">\${pid}</span>
+    </div>
+    <div class="ad-body">
+      <h2 class="ad-title">Committed, not yet billed</h2>
+      <div class="ad-impact"><span class="adi-v num">\${fmtSGD(total)}</span><span class="adi-k">will land on cost — no invoice posted yet</span></div>
+      <section class="ad-sec">
+        <div class="section-label">What sits in this bucket</div>
+        <p class="ad-p">Money the project is already contractually holding: purchase orders placed but not yet received or invoiced, bookings signed for later phases, and crew rosters approved in Time &amp; Attendance but not yet worked. None of it is in actuals; all of it is coming — the forecast counts it as spent, because avoiding it would mean cancelling orders.</p>
+      </section>
+      \${rows.length?\`<section class="ad-sec">
+        <div class="section-label">The \${rows.length} commitments</div>
+        <div class="doc-list">
+        \${rows.map(r=>\`<div class="doc-row">
+          <span class="doc-type">\${KIND_LBL[r.kind]||r.kind}</span>
+          <span class="doc-ref">\${r.doc_ref}</span>
+          <span class="doc-note"><b>\${r.vendor}</b> — \${r.description}<br/><span class="mono" style="font-size:9px;letter-spacing:.05em;color:var(--text-faint)"><span class="cat-tick" style="background:\${catColorVar(r.category)};width:6px;height:6px;display:inline-block;margin-right:4px"></span>\${catLabel(r.category).toUpperCase()} · DUE \${r.due_date} · <b class="num" style="color:var(--text)">\${fmtSGD(r.amount)}</b></span></span>
+        </div>\`).join('')}
+        </div>
+        <p class="ad-fine">Each line is allocated to its own category in the forecast column — no pro-rata spreading. Read-only references; the documents live in SAP Business One and the T&amp;A roster.</p>
+      </section>\`:\`<section class="ad-sec"><p class="ad-p">No itemised commitments on file for this project — the figure is derived from the forecast model (forecast final cost − actuals to date).</p></section>\`}
+    </div>\`;
+  document.getElementById('alertScrim').classList.add('open');
+  dr.classList.add('open');
+  document.getElementById('adClose').addEventListener('click', closeAlertDrawer);
+}
+`;
+  const at = mustIndex(html, '/* =========================================================================\n   COST DRIVER DRAWER');
+  html = html.slice(0, at) + drawerFn + '\n' + html.slice(at);
+}
 
 /* ---- 2b. copy tweaks: the answers are no longer scripted ---------------- */
 html = html.replace(/Prototype — answers come from a scripted set\.?/g,

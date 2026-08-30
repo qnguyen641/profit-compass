@@ -91,6 +91,7 @@ def _run_tool(con, name, args):
                 "category_variance": engine.category_variance(con, pid),
                 "bridge": engine.bridge(con, pid),
                 "open_commitment_sgd": engine.open_commitment(con, pid),
+                "open_commitments_itemised": engine.open_commitments(con, pid),
                 "diagnosis": engine.diagnosis(con, pid),
                 "lesson": (db.meta(con, "PROJECT_LESSON") or {}).get(pid),
             })

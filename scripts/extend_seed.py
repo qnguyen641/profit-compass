@@ -175,6 +175,48 @@ def build_lines(cat):
 
 
 seed["QUOTE_REQUEST"]["build_up"] = {c: build_lines(c) for c in seed["CATS"]}
+
+# ---- OPEN COMMITMENTS: itemise "committed, not yet billed" -----------------
+# Money contractually held but not yet in actuals: open POs (ordered, not
+# received/invoiced), bookings for later phases, and crew rosters approved in
+# T&A but not yet worked. Each line allocates to its OWN category in the
+# forecast — no pro-rata spreading. Sums reconcile exactly to the totals the
+# model already used (PRJ-001: S$85,000 · PRJ-004: S$2,940).
+seed["OPEN_COMMITMENTS"] = [
+    {"id": "OPO-2501", "project_id": "PRJ-001", "vendor": "GlowTech Lighting Pte Ltd",
+     "description": "Event-week LED spares & standby stock — ordered, not received",
+     "category": "material", "amount": 16800, "kind": "open_po", "due_date": "2026-07-08", "doc_ref": "PO-2501"},
+    {"id": "OPO-2503", "project_id": "PRJ-001", "vendor": "Nova Fabric Co.",
+     "description": "Backdrop refresh panels for event week — in production",
+     "category": "material", "amount": 11500, "kind": "open_po", "due_date": "2026-07-10", "doc_ref": "PO-2503"},
+    {"id": "CMT-2506", "project_id": "PRJ-001", "vendor": "Event-Day Crew (internal)",
+     "description": "Approved standby roster for event week — hours not yet worked",
+     "category": "labour", "amount": 10200, "kind": "crew_roster", "due_date": "2026-07-12", "doc_ref": "T&A roster W28"},
+    {"id": "CMT-2507", "project_id": "PRJ-001", "vendor": "Dismantling Crew (internal)",
+     "description": "Remaining dismantling shifts on the approved schedule",
+     "category": "labour", "amount": 13500, "kind": "crew_roster", "due_date": "2026-07-25", "doc_ref": "T&A roster W29–30"},
+    {"id": "OPO-2510", "project_id": "PRJ-001", "vendor": "Apex Audio-Visual Pte Ltd",
+     "description": "Event-phase AV rental balance — invoiced after the event",
+     "category": "subcontractor", "amount": 17000, "kind": "open_po", "due_date": "2026-07-14", "doc_ref": "SC-412 balance"},
+    {"id": "OPO-2515", "project_id": "PRJ-001", "vendor": "SwiftHaul Logistics",
+     "description": "Dismantling haulage & crane booking",
+     "category": "logistics", "amount": 9400, "kind": "booking", "due_date": "2026-07-22", "doc_ref": "BK-7741"},
+    {"id": "OPO-2520", "project_id": "PRJ-001", "vendor": "CleanSweep Site Services",
+     "description": "Post-event site restoration — PO signed",
+     "category": "other", "amount": 6600, "kind": "open_po", "due_date": "2026-07-28", "doc_ref": "PO-2520"},
+    {"id": "OPO-4201", "project_id": "PRJ-004", "vendor": "BrightLite Displays",
+     "description": "Screen commissioning spares — on order",
+     "category": "material", "amount": 2940, "kind": "open_po", "due_date": "2026-06-05", "doc_ref": "PO-4201"},
+]
+assert sum(c["amount"] for c in seed["OPEN_COMMITMENTS"] if c["project_id"] == "PRJ-001") == seed["OPEN_PO_TOTAL"]
+assert sum(c["amount"] for c in seed["OPEN_COMMITMENTS"] if c["project_id"] == "PRJ-004") == 2940
+
+for a in seed["RISK_ALERTS"]:
+    if a["id"] == "RA-3":
+        a["evidenceNote"] = ("S$85,000 across 7 itemised commitments: two material POs for event week, "
+                             "the approved event and dismantling crew rosters, the AV rental balance, a "
+                             "haulage booking and site restoration. Each lands in its own category in the "
+                             "forecast column — none of it is invoiced yet.")
 seed["LABOUR_BY_PROJECT"]["PRJ-004"] = PRJ004_LABOUR
 seed["LABOUR_RECONCILIATION"] = LABOUR_RECONCILIATION
 

@@ -89,10 +89,20 @@ def budget_total_cost(con, pid):
     return round(s["revenue"] * (1 - s["budget_margin_pct"] / 100))
 
 
+def open_commitments(con, pid):
+    """Itemised committed-but-unbilled lines: open POs, bookings, approved
+    crew rosters — each allocated to its own category."""
+    return [dict(r) for r in con.execute(
+        "SELECT * FROM open_commitments WHERE project_id=? ORDER BY due_date",
+        (pid,)).fetchall()]
+
+
 def open_commitment(con, pid):
-    """Committed-but-unbilled money still to land (open POs)."""
-    if pid == "PRJ-001":
-        return db.meta(con, "OPEN_PO_TOTAL")
+    """Committed-but-unbilled total: sum of itemised commitments when on
+    file, else derived from the forecast model."""
+    rows = open_commitments(con, pid)
+    if rows:
+        return round(sum(r["amount"] for r in rows))
     s = snapshot(con, pid)
     if s["final"] or s.get("forecast_final_margin_pct") is None:
         return 0
@@ -103,9 +113,16 @@ def forecast_by_category(con, pid):
     """Open commitment allocated pro-rata to budget share, using largest-remainder
     rounding so the allocation sums EXACTLY to the commitment (no S$1 drift)."""
     cats = _cats(con)
+    actual = category_actuals(con, pid)
+    rows = open_commitments(con, pid)
+    if rows:
+        # itemised: each commitment lands in its own category
+        alloc = {c: 0 for c in cats}
+        for r in rows:
+            alloc[r["category"]] += r["amount"]
+        return {c: round(actual[c] + alloc[c]) for c in cats}
     commit = open_commitment(con, pid)
     budget = category_budgets(con, pid)
-    actual = category_actuals(con, pid)
     budget_sum = sum(budget[c] for c in cats)
     raw = {c: commit * (budget[c] / budget_sum) for c in cats}
     alloc = {c: math.floor(raw[c]) for c in cats}
@@ -436,6 +453,8 @@ def bootstrap(con):
         "CAUSE_LABEL": db.meta(con, "CAUSE_LABEL"),
         "LIFECYCLE_STAGES": db.meta(con, "LIFECYCLE_STAGES"),
         "OPEN_PO_TOTAL": db.meta(con, "OPEN_PO_TOTAL"),
+        "OPEN_COMMITMENTS": [dict(r) for r in con.execute(
+            "SELECT * FROM open_commitments ORDER BY project_id, due_date").fetchall()],
         "CATS": cats,
         # PRJ-001 shortcut aliases used by the original views
         "BUDGET_BY_CATEGORY": category_data["PRJ-001"]["budget"],

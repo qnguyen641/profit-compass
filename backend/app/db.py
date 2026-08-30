@@ -68,6 +68,10 @@ CREATE TABLE reference_facts (
   project_id TEXT PRIMARY KEY, subcontractor_overrun_pct REAL,
   labour_ot_overrun_pct REAL, note TEXT
 );
+CREATE TABLE open_commitments (
+  id TEXT PRIMARY KEY, project_id TEXT, vendor TEXT, description TEXT,
+  category TEXT, amount REAL, kind TEXT, due_date TEXT, doc_ref TEXT
+);
 CREATE TABLE draft_quotes (
   id INTEGER PRIMARY KEY AUTOINCREMENT, qr_id TEXT, rev INTEGER,
   margin_pct REAL, contract_value REAL, cost_base REAL, created_at TEXT
@@ -170,6 +174,11 @@ def init_db(force: bool = True) -> None:
             "INSERT INTO reference_facts VALUES (?,?,?,?)",
             (pid, rf["subcontractor_overrun_pct"], rf["labour_ot_overrun_pct"], rf["note"]),
         )
+
+    for c in seed.get("OPEN_COMMITMENTS", []):
+        con.execute("INSERT INTO open_commitments VALUES (?,?,?,?,?,?,?,?,?)",
+                    (c["id"], c["project_id"], c["vendor"], c["description"],
+                     c["category"], c["amount"], c["kind"], c["due_date"], c["doc_ref"]))
 
     _generate_timesheets(con, seed)
 
