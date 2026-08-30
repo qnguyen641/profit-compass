@@ -192,6 +192,47 @@ mustReplace(
   + "    const hv = document.getElementById('quoteHeadVal'); if(hv) hv.textContent = fmtSGD(suggestedContractValue(n));\n"
   + "    const hm = document.getElementById('quoteHeadMargin'); if(hm) hm.textContent = n;");
 
+/* ---- 2f3. quote bars that explain themselves ---------------------------- */
+// The dimension-line rendering (hairline + floating "base" tick) read like a
+// technical drawing. Replaced with two-segment bars: solid = cost scaled from
+// delivered-job actuals, striped = contingency — with the arithmetic written
+// under each bar that carries contingency.
+mustReplace(
+  `  const maxBar = Math.max(...CATS.map(c=>QUOTE_REQUEST.suggested_budget_by_category[c]));
+  const suggestBars = CATS.map(c=>{
+    const withCont = QUOTE_REQUEST.suggested_budget_by_category[c];
+    const noCont = QUOTE_REQUEST.base_budget_by_category_no_contingency[c];
+    const hasCont = withCont !== noCont;
+    return \`<div class="barrow" style="grid-template-columns:104px 1fr 78px;gap:10px">
+      <div class="cat-lbl" style="font-size:12px"><span class="cat-tick" style="background:\${catColorVar(c)}"></span>\${catLabel(c)}</div>
+      <div class="track">
+        <span class="dim" style="width:\${(withCont/maxBar*100).toFixed(1)}%;background:\${catColorVar(c)}"></span>
+        \${hasCont?\`<span class="ref" style="left:\${(noCont/maxBar*100).toFixed(1)}%" data-lbl="base"></span>\`:''}
+      </div>
+      <div class="amt">\${fmtSGD(withCont)}</div>
+    </div>\`;
+  }).join('');`,
+  `  const maxBar = Math.max(...CATS.map(c=>QUOTE_REQUEST.suggested_budget_by_category[c]));
+  const qCostBase = CATS.reduce((s,c)=>s+QUOTE_REQUEST.suggested_budget_by_category[c],0);
+  const CONT_STRIPE = 'repeating-linear-gradient(45deg,var(--warn),var(--warn) 3px,var(--warn-bg) 3px,var(--warn-bg) 6px)';
+  const suggestBars = CATS.map(c=>{
+    const withCont = QUOTE_REQUEST.suggested_budget_by_category[c];
+    const noCont = QUOTE_REQUEST.base_budget_by_category_no_contingency[c];
+    const cont = withCont - noCont;
+    const share = Math.round(withCont/qCostBase*100);
+    return \`<div style="display:grid;grid-template-columns:104px 1fr 92px;gap:10px;align-items:center">
+      <div class="cat-lbl" style="font-size:12px"><span class="cat-tick" style="background:\${catColorVar(c)}"></span>\${catLabel(c)}</div>
+      <div>
+        <div style="display:flex;height:13px;border-radius:2px;overflow:hidden;background:var(--surface-2);border:1px solid var(--border)">
+          <span style="width:\${(noCont/maxBar*100).toFixed(1)}%;background:\${catColorVar(c)}"></span>
+          \${cont>0?\`<span style="width:\${(cont/maxBar*100).toFixed(1)}%;background:\${CONT_STRIPE}"></span>\`:''}
+        </div>
+        \${cont>0?\`<div class="mono" style="font-size:9px;color:var(--text-faint);margin-top:3px">\${fmtSGD(noCont)} from history + <span style="color:var(--warn-ink);font-weight:600">\${fmtSGD(cont)} contingency</span></div>\`:''}
+      </div>
+      <div style="text-align:right"><span class="num" style="font-weight:600;font-size:13px">\${fmtSGD(withCont)}</span><div class="mono" style="font-size:9px;color:var(--text-faint)">\${share}% of cost base</div></div>
+    </div>\`;
+  }).join('');`);
+
 /* ---- 2g. finished-job evidence drawer: facts only, no lecturing --------- */
 mustReplace(`
         <p class="ad-p" style="margin-top:12px">\${PROJECT_LESSON[pid]||''}</p>`, '');
@@ -324,7 +365,10 @@ const dStart = mustIndex(html, 'function renderScreenD(){');
 html = html.slice(0, dStart) + buildupFn + '\n' + html.slice(dStart);
 mustReplace(
   '<div class="legend"><span><i style="color:var(--text-faint)"></i>Dashed mark = cost before contingency</span></div>',
-  '<div class="legend"><span><i style="color:var(--text-faint)"></i>Dashed mark = cost before contingency</span></div>\n'
+  '<div class="legend" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">'
+  + '<span style="display:inline-flex;align-items:center;gap:6px"><i style="width:15px;height:9px;background:var(--cat-material);border-radius:1px;display:inline-block"></i>Cost scaled from delivered-job actuals</span>'
+  + '<span style="display:inline-flex;align-items:center;gap:6px"><i style="width:15px;height:9px;background:repeating-linear-gradient(45deg,var(--warn),var(--warn) 3px,var(--warn-bg) 3px,var(--warn-bg) 6px);border-radius:1px;display:inline-block"></i>Contingency for known overrun patterns</span>'
+  + '</div>\n'
   + '        <div class="section-label" style="margin-top:14px">Where the money goes</div>\n'
   + '        ${renderQuoteBuildup()}');
 
