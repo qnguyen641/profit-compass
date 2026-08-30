@@ -99,6 +99,82 @@ new_ids = {t["id"] for t in PRJ004_TXNS}
 seed["TRANSACTIONS"] = [t for t in seed["TRANSACTIONS"] if t["id"] not in new_ids]
 added = PRJ004_TXNS
 seed["TRANSACTIONS"].extend(added)
+
+# ---- Remove AI auto-attribution: the three untagged rows become ordinary ----
+# tagged ledger lines with a proper project code. Amounts unchanged, so every
+# total stays identical — only the "AI matched this" mechanism is retired.
+RETAG = {
+    "AP-8834": {"vendor": "GlowTech Lighting Pte Ltd",
+                "description": "LED strip replenishment — expedited",
+                "keep_driver": True},
+    "LOG-710": {"vendor": "SwiftHaul Logistics",
+                "description": "Freight charge — final-phase deliveries",
+                "keep_driver": False},
+    "OTH-915": {"vendor": "SinCo Hardware",
+                "description": "Site sundries & consumables",
+                "keep_driver": False},
+}
+for t in seed["TRANSACTIONS"]:
+    r = RETAG.get(t["id"])
+    if not r:
+        continue
+    t["project_id"] = t.pop("resolved_project_id", t.get("project_id")) or "PRJ-001"
+    t["tag_status"] = "tagged"
+    t["vendor"] = r["vendor"]
+    t["description"] = r["description"]
+    for k in ("confidence", "inherit_via"):
+        t.pop(k, None)
+    if not r["keep_driver"]:
+        t.pop("driver", None)
+    elif t.get("driver"):
+        t["driver"].pop("cause", None) if t["driver"].get("cause") in ("no_reference", "site_match_only") else None
+
+# ---- Quote cost-base BUILD-UP: who gets paid, for what, per category --------
+# Each line = mean of the two reference jobs' actuals for that vendor+work,
+# scaled so the category sums exactly to the reference-based base budget;
+# labour & subcontractor then carry an explicit, reasoned contingency line.
+REFS = seed["QUOTE_REQUEST"]["reference_project_ids"]          # PRJ-002, PRJ-003
+
+
+def _norm(desc):
+    return desc.split("—")[0].split("(")[0].strip().rstrip(" &")
+
+
+def build_lines(cat):
+    groups = {}
+    for t in seed["TRANSACTIONS"]:
+        if t.get("project_id") in REFS and t["category"] == cat:
+            key = (t["vendor"], _norm(t["description"]))
+            g = groups.setdefault(key, {"vendor": t["vendor"], "description": _norm(t["description"]),
+                                        "refs": {}, })
+            g["refs"][t["project_id"]] = g["refs"].get(t["project_id"], 0) + t["amount"]
+    lines = []
+    for g in groups.values():
+        g["mean"] = sum(g["refs"].values()) / len(REFS)   # a line seen on one ref weighs half
+        lines.append(g)
+    base = seed["QUOTE_REQUEST"]["base_budget_by_category_no_contingency"][cat]
+    scale = base / sum(g["mean"] for g in lines)
+    out = []
+    for g in sorted(lines, key=lambda x: -x["mean"]):
+        out.append({"vendor": g["vendor"], "description": g["description"],
+                    "amount": int(round(g["mean"] * scale / 100) * 100),
+                    "basis": {"ref_actuals": g["refs"],
+                              "method": "mean of reference actuals × scale to base budget"}})
+    out[0]["amount"] += base - sum(l["amount"] for l in out)   # absorb rounding drift
+    suggested = seed["QUOTE_REQUEST"]["suggested_budget_by_category"][cat]
+    if suggested != base:
+        reason = {
+            "labour": "Installation overtime ran +18% (PRJ-002) and +22% (PRJ-003) over budget — contingency priced in up front instead of being absorbed as overrun.",
+            "subcontractor": "Subcontracts closed +19% (PRJ-002) and +8% (PRJ-003) over — buffer held until a firm quote replaces the estimate.",
+        }.get(cat, "Contingency from reference overrun pattern.")
+        out.append({"vendor": "— contingency —", "description": "Reference-pattern contingency",
+                    "amount": suggested - base, "contingency": True, "reason": reason,
+                    "basis": {"method": "suggested − base", "ref_actuals": {}}})
+    assert sum(l["amount"] for l in out) == suggested, (cat, sum(l["amount"] for l in out), suggested)
+    return out
+
+
+seed["QUOTE_REQUEST"]["build_up"] = {c: build_lines(c) for c in seed["CATS"]}
 seed["LABOUR_BY_PROJECT"]["PRJ-004"] = PRJ004_LABOUR
 seed["LABOUR_RECONCILIATION"] = LABOUR_RECONCILIATION
 

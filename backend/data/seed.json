@@ -312,17 +312,14 @@
   },
   {
    "id": "AP-8834",
-   "project_id": null,
+   "project_id": "PRJ-001",
    "date": "2026-06-20",
    "category": "material",
    "vendor": "GlowTech Lighting Pte Ltd",
-   "description": "LED strip replenishment (no project code on invoice)",
+   "description": "LED strip replenishment \u2014 expedited",
    "amount": 28300,
    "phase": "installation",
-   "tag_status": "inherited",
-   "confidence": 92,
-   "resolved_project_id": "PRJ-001",
-   "inherit_via": "Vendor + delivery-date match to Orchard Road site address",
+   "tag_status": "tagged",
    "driver": {
     "cause": "expedite",
     "incident": "INC-001",
@@ -539,19 +536,14 @@
   },
   {
    "id": "LOG-710",
-   "project_id": null,
+   "project_id": "PRJ-001",
    "date": "2026-06-19",
    "category": "logistics",
-   "vendor": "(no vendor reference)",
-   "description": "Freight charge \u2014 no cost centre or vendor reference on the document",
+   "vendor": "SwiftHaul Logistics",
+   "description": "Freight charge \u2014 final-phase deliveries",
    "amount": 12000,
    "phase": "installation",
-   "tag_status": "unallocated",
-   "resolved_project_id": "PRJ-001",
-   "driver": {
-    "cause": "no_reference",
-    "note": "Counted against this project on a delivery-address match alone. Nothing on the document names the job. If it belongs elsewhere, logistics improves by 12.6%."
-   }
+   "tag_status": "tagged"
   },
   {
    "id": "OTH-910",
@@ -588,20 +580,14 @@
   },
   {
    "id": "OTH-915",
-   "project_id": null,
+   "project_id": "PRJ-001",
    "date": "2026-06-24",
    "category": "other",
-   "vendor": "(cost-centre keyword match only)",
-   "description": "Site sundries \u2014 matched by cost-centre keyword, not vendor",
+   "vendor": "SinCo Hardware",
+   "description": "Site sundries & consumables",
    "amount": 8500,
    "phase": "installation",
-   "tag_status": "suggested",
-   "confidence": 78,
-   "resolved_project_id": "PRJ-001",
-   "driver": {
-    "cause": "site_match_only",
-    "note": "Matched on a cost-centre keyword, not a vendor or project code. Counted here, but the attribution is inferred \u2014 fix the code in SAP B1 to make it certain."
-   }
+   "tag_status": "tagged"
   },
   {
    "id": "PO-1902",
@@ -2229,7 +2215,338 @@
    "Installation overtime ran 18\u201322% over budget on both reference jobs \u2014 recommend pricing in a ~12\u201315% labour contingency.",
    "Subcontractor costs ran 8\u201319% over on reference jobs \u2014 get a firm quote before committing, not a rough estimate."
   ],
-  "target_margin_pct_default": 28
+  "target_margin_pct_default": 28,
+  "build_up": {
+   "material": [
+    {
+     "vendor": "BrightLite Displays",
+     "description": "LED module supply",
+     "amount": 88900,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 88500,
+       "PRJ-003": 61200
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "Heng Long Timber Supplies",
+     "description": "Timber",
+     "amount": 63400,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 62000,
+       "PRJ-003": 44600
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "GlowTech Lighting Pte Ltd",
+     "description": "LED strip",
+     "amount": 54100,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 63000,
+       "PRJ-003": 28000
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "Nova Fabric Co.",
+     "description": "Backdrop fabric & banners",
+     "amount": 49100,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 44200,
+       "PRJ-003": 38400
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "Prism Paint & Coatings",
+     "description": "Finishing paint",
+     "amount": 26800,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 26000,
+       "PRJ-003": 19000
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "SinCo Hardware",
+     "description": "Fixings & hardware",
+     "amount": 22700,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 21300,
+       "PRJ-003": 16800
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    }
+   ],
+   "labour": [
+    {
+     "vendor": "Fabrication Crew (internal)",
+     "description": "Fabrication crew payroll",
+     "amount": 89700,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 109600,
+       "PRJ-003": 84400
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "Installation Crew (internal)",
+     "description": "Installation crew payroll",
+     "amount": 82000,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 97200,
+       "PRJ-003": 80100
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "Event-Day Crew (internal)",
+     "description": "Event-day crew & standby",
+     "amount": 16000,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 21600,
+       "PRJ-003": 13100
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "Site Survey Team (internal)",
+     "description": "Procurement / site-survey labour",
+     "amount": 15700,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 19400,
+       "PRJ-003": 14600
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "Design Studio (internal)",
+     "description": "Design studio hours",
+     "amount": 13900,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 16800,
+       "PRJ-003": 13200
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "Dismantling Crew (internal)",
+     "description": "Dismantling crew",
+     "amount": 9700,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 12400,
+       "PRJ-003": 8600
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "\u2014 contingency \u2014",
+     "description": "Reference-pattern contingency",
+     "amount": 41000,
+     "contingency": true,
+     "reason": "Installation overtime ran +18% (PRJ-002) and +22% (PRJ-003) over budget \u2014 contingency priced in up front instead of being absorbed as overrun.",
+     "basis": {
+      "method": "suggested \u2212 base",
+      "ref_actuals": {}
+     }
+    }
+   ],
+   "subcontractor": [
+    {
+     "vendor": "Stellar Rigging & Structures",
+     "description": "Rigging & structural install subcontract",
+     "amount": 69700,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 96800,
+       "PRJ-003": 58600
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "Apex Audio-Visual Pte Ltd",
+     "description": "AV & sound subcontract",
+     "amount": 39600,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 47200,
+       "PRJ-003": 41000
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "Stellar Rigging & Structures",
+     "description": "Scaffolding & access subcontract",
+     "amount": 31300,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 41500,
+       "PRJ-003": 28400
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "Apex Audio-Visual Pte Ltd",
+     "description": "Additional AV rental",
+     "amount": 7400,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 16500
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "\u2014 contingency \u2014",
+     "description": "Reference-pattern contingency",
+     "amount": 24000,
+     "contingency": true,
+     "reason": "Subcontracts closed +19% (PRJ-002) and +8% (PRJ-003) over \u2014 buffer held until a firm quote replaces the estimate.",
+     "basis": {
+      "method": "suggested \u2212 base",
+      "ref_actuals": {}
+     }
+    }
+   ],
+   "logistics": [
+    {
+     "vendor": "SwiftHaul Logistics",
+     "description": "Site delivery & haulage",
+     "amount": 37500,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 42000,
+       "PRJ-003": 31800
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "SwiftHaul Logistics",
+     "description": "Crane & heavy-lift charges",
+     "amount": 29200,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 33500,
+       "PRJ-003": 24000
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "SwiftHaul Logistics",
+     "description": "Storage & warehousing",
+     "amount": 14600,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 17500,
+       "PRJ-003": 11200
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "SwiftHaul Logistics",
+     "description": "Dismantling haulage",
+     "amount": 10700,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 12000,
+       "PRJ-003": 9000
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    }
+   ],
+   "other": [
+    {
+     "vendor": "Site Safety & Permits Co.",
+     "description": "Permits & safety compliance",
+     "amount": 20800,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 24800,
+       "PRJ-003": 18900
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "InsureAll Brokers",
+     "description": "Project insurance",
+     "amount": 16200,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 19600,
+       "PRJ-003": 14300
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "CleanSweep Site Services",
+     "description": "Site cleaning & waste management",
+     "amount": 14700,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 18200,
+       "PRJ-003": 12600
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "Singapore Land Transport Authority",
+     "description": "Road closure permit",
+     "amount": 5400,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-002": 11400
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    },
+    {
+     "vendor": "Gardens by the Bay",
+     "description": "Out-of-hours venue access fee",
+     "amount": 3900,
+     "basis": {
+      "ref_actuals": {
+       "PRJ-003": 8200
+      },
+      "method": "mean of reference actuals \u00d7 scale to base budget"
+     }
+    }
+   ]
+  }
  },
  "LABOUR_RECONCILIATION": {
   "PRJ-001": {

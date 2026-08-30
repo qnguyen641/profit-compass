@@ -111,6 +111,60 @@ html = html.slice(0, scStart) + `function sendChat(){
 /* answerTyped is now the offline fallback: it must not double-push the user turn
    (askBackend already did) — it only pushes the AI turn, which it already does. */
 
+/* ---- 2a. retire the AI auto-attribution storyline ----------------------- */
+// The three formerly-untagged rows are now ordinary tagged ledger lines
+// (seed change), so the two insight texts that referenced the attribution
+// mechanism are rewritten to match the data.
+function mustReplace(needle, replacement) {
+  if (!html.includes(needle)) throw new Error('replace target not found: ' + needle.slice(0, 60));
+  html = html.replace(needle, replacement);
+}
+mustReplace(
+  'detail:()=>`Healthy even after one unreferenced ${fmtSGD(12000)} freight charge that is still awaiting attribution — if that lands here, the saving narrows.`',
+  'detail:()=>`Storage, haulage, crane and final-phase freight all sat under a single SwiftHaul agreement — one vendor to negotiate with, one rate card to hold.`');
+mustReplace(
+  'headline:()=>`Close to plan. One ${fmtSGD(8500)} line is still a <b>suggested</b> match, not a confirmed saving.`',
+  'headline:()=>`Close to plan across permits, insurance, cleaning and site sundries.`');
+mustReplace(
+  'detail:()=>`Permits, insurance and site cleaning all tracked to budget. Confirm the suggested attribution before treating the underspend as real.`',
+  'detail:()=>`Permits, insurance and site cleaning all tracked to budget, with a small underspend on the allowance.`');
+
+/* ---- 2c. quote cost-base build-up: who gets paid, for what -------------- */
+const buildupFn = `
+/* Cost-base build-up — each suggested category amount decomposed into the
+   payees behind it: mean of the two reference jobs' actuals scaled to the
+   base budget, plus an explicit, reasoned contingency line. */
+function renderQuoteBuildup(){
+  if(!QUOTE_REQUEST.build_up) return '';
+  return CATS.map(c=>{
+    const lines = QUOTE_REQUEST.build_up[c]||[];
+    const tot = QUOTE_REQUEST.suggested_budget_by_category[c];
+    const hasCont = lines.some(l=>l.contingency);
+    return \`<details class="qb" style="border:1px solid var(--border);border-radius:3px;margin-bottom:6px;background:var(--surface)">
+      <summary style="display:flex;align-items:center;gap:8px;padding:7px 10px;cursor:pointer;font-size:12px">
+        <span class="cat-tick" style="background:\${catColorVar(c)}"></span>
+        <span style="flex:1">\${catLabel(c)}<span class="muted" style="font-size:10.5px"> · \${lines.length} lines</span></span>
+        <span class="num" style="font-weight:600">\${fmtSGD(tot)}</span>
+      </summary>
+      <div style="border-top:1px solid var(--border);padding:5px 10px 9px">
+        \${lines.map(l=>\`<div style="display:flex;gap:10px;align-items:baseline;padding:4px 0;border-bottom:1px dashed var(--border);font-size:11.5px">
+          <div style="flex:1;min-width:0"><b>\${l.vendor}</b><div class="muted" style="font-size:10.5px">\${l.description}\${l.reason?\` — \${l.reason}\`:''}</div></div>
+          <div class="num" style="white-space:nowrap;\${l.contingency?'color:var(--warn);font-weight:600':''}">\${fmtSGD(l.amount)}</div>
+        </div>\`).join('')}
+        <div class="mono muted" style="font-size:9.5px;margin-top:6px;letter-spacing:.03em">MEAN OF PRJ-002 + PRJ-003 ACTUALS, SCALED TO BASE\${hasCont?' · + REASONED CONTINGENCY':''}</div>
+      </div>
+    </details>\`;
+  }).join('');
+}
+`;
+const dStart = mustIndex(html, 'function renderScreenD(){');
+html = html.slice(0, dStart) + buildupFn + '\n' + html.slice(dStart);
+mustReplace(
+  '<div class="legend"><span><i style="color:var(--text-faint)"></i>Dashed mark = cost before contingency</span></div>',
+  '<div class="legend"><span><i style="color:var(--text-faint)"></i>Dashed mark = cost before contingency</span></div>\n'
+  + '        <div class="section-label" style="margin-top:14px">Where the money goes</div>\n'
+  + '        ${renderQuoteBuildup()}');
+
 /* ---- 2b. copy tweaks: the answers are no longer scripted ---------------- */
 html = html.replace(/Prototype — answers come from a scripted set\.?/g,
   'AI answers are computed from the workspace database.');

@@ -70,7 +70,7 @@ TOOLS = [
      "input_schema": {"type": "object", "properties": {
          "project_id": {"type": "string"}}, "required": ["project_id"]}},
     {"name": "get_quote_context",
-     "description": "The open quotation request (PRJ-005, Gardens by the Bay CNY 2027) with AI-suggested budget by category, plus overrun patterns from the reference projects it was priced from.",
+     "description": "The open quotation request (PRJ-005, Gardens by the Bay CNY 2027): suggested budget by category, the per-category BUILD-UP lines showing exactly who gets paid for what (each line = mean of the two reference jobs' actuals scaled to the base budget, plus explicit reasoned contingency lines for labour and subcontractor), reference-match scoring inputs, and overrun patterns from the reference projects. Use build_up when asked how a quoted amount accumulates or who the money goes to.",
      "input_schema": {"type": "object", "properties": {}}},
 ]
 
