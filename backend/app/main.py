@@ -122,6 +122,37 @@ def alerts():
         con.close()
 
 
+class DraftQuoteRequest(BaseModel):
+    margin_pct: float
+    contract_value: float
+    cost_base: float
+
+
+@app.post("/api/quotes")
+def create_draft_quote(req: DraftQuoteRequest):
+    """The one write this workspace performs: a DRAFT quotation into the B1
+    pipeline (simulated), always human-triggered. Approval stays in B1."""
+    if not (5 <= req.margin_pct <= 60):
+        raise HTTPException(400, "margin out of range")
+    from datetime import datetime, timezone
+    con = db.connect()
+    try:
+        qr = db.meta(con, "QUOTE_REQUEST")["id"]
+        rev = con.execute("SELECT COUNT(*) c FROM draft_quotes WHERE qr_id=?",
+                          (qr,)).fetchone()["c"] + 1
+        ts = datetime.now(timezone.utc).isoformat()
+        cur = con.execute(
+            "INSERT INTO draft_quotes (qr_id, rev, margin_pct, contract_value, cost_base, created_at) "
+            "VALUES (?,?,?,?,?,?)",
+            (qr, rev, req.margin_pct, req.contract_value, req.cost_base, ts))
+        con.commit()
+        return {"id": cur.lastrowid, "qr_id": qr, "rev": rev,
+                "margin_pct": req.margin_pct, "contract_value": req.contract_value,
+                "cost_base": req.cost_base, "created_at": ts}
+    finally:
+        con.close()
+
+
 class ChatRequest(BaseModel):
     question: str
     project_id: str | None = None

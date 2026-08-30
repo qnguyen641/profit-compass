@@ -309,9 +309,15 @@ def incidents(con, pid):
     return out
 
 
+def draft_quotes(con):
+    return [dict(r) for r in con.execute(
+        "SELECT * FROM draft_quotes ORDER BY rev").fetchall()]
+
+
 def quote_context(con):
     rf = {r["project_id"]: dict(r) for r in con.execute("SELECT * FROM reference_facts").fetchall()}
-    return {"quote_request": db.meta(con, "QUOTE_REQUEST"), "reference_facts": rf}
+    return {"quote_request": db.meta(con, "QUOTE_REQUEST"), "reference_facts": rf,
+            "draft_quotes": draft_quotes(con)}
 
 
 # ------------------------------------------------------- frontend bootstrap
@@ -417,4 +423,5 @@ def bootstrap(con):
         # PRJ-001 shortcut aliases used by the original views
         "BUDGET_BY_CATEGORY": category_data["PRJ-001"]["budget"],
         "ACTUAL_BY_CATEGORY": category_data["PRJ-001"]["actual"],
+        "QUOTE_DRAFTS": draft_quotes(con),
     }

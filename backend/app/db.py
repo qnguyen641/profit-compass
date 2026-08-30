@@ -68,6 +68,10 @@ CREATE TABLE reference_facts (
   project_id TEXT PRIMARY KEY, subcontractor_overrun_pct REAL,
   labour_ot_overrun_pct REAL, note TEXT
 );
+CREATE TABLE draft_quotes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, qr_id TEXT, rev INTEGER,
+  margin_pct REAL, contract_value REAL, cost_base REAL, created_at TEXT
+);
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT);
 CREATE INDEX idx_txn_project ON cost_transactions(project_id);
 CREATE INDEX idx_txn_resolved ON cost_transactions(resolved_project_id);

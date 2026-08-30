@@ -173,19 +173,13 @@ mustReplace(
   const cs = mustIndex(html, csM);
   const ce = mustIndex(html, ceM) + ceM.length;
   const content = html.slice(cs, ce);
+  // the quote's core output is what the tool actually knows: the COST.
+  // price options come below, anchored to history, not from a free lever.
   const headline =
-    "${quoteMode==='target' ? `"
-    + '<div style="margin-bottom:13px;padding-bottom:12px;border-bottom:1px solid var(--border)">'
-    + '<div class="num" id="quoteHeadVal" style="font-family:var(--font-display);font-size:27px;font-weight:700;letter-spacing:-.01em">${fmtSGD(targetPlan(quoteTargetValue,quoteMarginPct).allowed)}</div>'
-    + '<div class="mono" style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);margin-top:2px">Allowed cost budget · S$<span id="tvEcho">${quoteTargetValue.toLocaleString(\'en-SG\')}</span> × (1 − <span id="quoteHeadMargin">${quoteMarginPct}</span>%)</div>'
-    + '<div class="mono" style="font-size:10.5px;margin-top:7px">Reference cost of this work: ${fmtSGD(costBaseForMargin())} · gap <span id="targetGapVal" class="num" style="font-weight:700;color:${targetPlan(quoteTargetValue,quoteMarginPct).gap>0?\'var(--critical)\':\'var(--good)\'}">${(targetPlan(quoteTargetValue,quoteMarginPct).gap>0?\'−\':\'+\')+fmtSGD(Math.abs(targetPlan(quoteTargetValue,quoteMarginPct).gap)).replace(\'S\',\'S\')}</span></div>'
-    + '</div><div id="cutPlanWrap">${renderTargetPlan()}</div>'
-    + '` : `'
-    + '<div style="margin-bottom:13px;padding-bottom:12px;border-bottom:1px solid var(--border)">'
-    + '<div class="num" id="quoteHeadVal" style="font-family:var(--font-display);font-size:27px;font-weight:700;letter-spacing:-.01em">${fmtSGD(contractVal)}</div>'
-    + '<div class="mono" style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);margin-top:2px">Suggested contract value · <span id="quoteHeadMargin">${quoteMarginPct}</span>% target margin</div>'
-    + '</div>'
-    + '`}\n        ';
+    '<div style="margin-bottom:13px;padding-bottom:12px;border-bottom:1px solid var(--border)">'
+    + '<div class="num" id="quoteHeadVal" style="font-family:var(--font-display);font-size:27px;font-weight:700;letter-spacing:-.01em">${fmtSGD(costBaseForMargin())}</div>'
+    + '<div class="mono" style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);margin-top:2px">Estimated cost to deliver · contingencies included · from ${QUOTE_REQUEST.reference_project_ids.length} delivered jobs</div>'
+    + '</div>\n        ';
   const placeholder =
     '<div class="empty-note" style="padding:30px 16px;text-align:center;line-height:1.6">'
     + 'No quote yet.<br/>Set the target margin, then press <b>Generate quote</b> — '
@@ -193,13 +187,7 @@ mustReplace(
     + '</div>';
   html = html.slice(0, cs) + '${done ? `' + headline + content + '` : `' + placeholder + '`}' + html.slice(ce);
 }
-// (e) margin changes move the headline too, not just the small formula echo
-mustReplace(
-  "    const out = document.getElementById('contractValOut'); if(out) out.textContent = fmtSGD(suggestedContractValue(n));",
-  "    const out = document.getElementById('contractValOut'); if(out) out.textContent = fmtSGD(suggestedContractValue(n));\n"
-  + "    if(quoteMode==='margin'){ const hv = document.getElementById('quoteHeadVal'); if(hv) hv.textContent = fmtSGD(suggestedContractValue(n)); }\n"
-  + "    const hm = document.getElementById('quoteHeadMargin'); if(hm) hm.textContent = n;\n"
-  + "    if(typeof updateTargetOutputs==='function') updateTargetOutputs();");
+// (setMargin stays as dead code — the margin inputs it served are gone)
 
 /* ---- 2f3. quote bars that explain themselves ---------------------------- */
 // The dimension-line rendering (hairline + floating "base" tick) read like a
@@ -242,134 +230,121 @@ mustReplace(
     </div>\`;
   }).join('');`);
 
-/* ---- 2f4. target-price mode: fit costs to a client budget --------------- */
-// The reverse workflow: the client names the price, the margin is a floor,
-// and the tool computes the allowed cost budget and how to close the gap —
-// contingencies first (each cut carries its defensibility condition), scope
-// last (flagged as a human decision, with the pro-rata arithmetic shown).
+/* ---- 2f5. margin as anchored pricing options + a real draft action ------ */
+// The quote's core output is the COST estimate (that's what the tool knows).
+// The margin lever and the cut-plan mode are gone: margin is chosen from a
+// ladder of price points anchored to what this company planned and actually
+// delivered, and the approve button performs a REAL write — a draft
+// quotation into the B1 pipeline (POST api/quotes), revisioned and shown.
 mustReplace(
   'let quoteMarginPct = QUOTE_REQUEST.target_margin_pct_default;',
   `let quoteMarginPct = QUOTE_REQUEST.target_margin_pct_default;
-let quoteMode = 'margin';          // 'margin' = price from margin · 'target' = fit costs to client budget
-let quoteTargetValue = 1150000;    // what the client says they can pay
-
-function quoteContingency(cat){
-  return QUOTE_REQUEST.suggested_budget_by_category[cat] - QUOTE_REQUEST.base_budget_by_category_no_contingency[cat];
-}
-function targetPlan(value, marginPct){
-  const allowed = Math.round(value * (1 - marginPct/100));
-  const ref = costBaseForMargin();
-  const gap = ref - allowed;                       // >0 = must cut
-  const steps = [];
-  let remaining = gap;
-  const subCont = quoteContingency('subcontractor');
-  if(remaining > 0 && subCont > 0){
-    const cut = Math.min(subCont, remaining);
-    steps.push({ label:'Remove subcontractor contingency', amount:cut,
-      cond:'Defensible only if rigging is committed on a firm quote before signing — the reference job that did held to +8%; the one that didn\\'t paid +19%.' });
-    remaining -= cut;
-  }
-  const labCont = quoteContingency('labour');
-  if(remaining > 0 && labCont > 0){
-    const cut = Math.min(labCont, remaining);
-    steps.push({ label:'Remove labour overtime contingency', amount:cut,
-      cond:'Defensible only with a protected install window — delivery penalties on LED and fabric, no mid-build scope changes. That pattern drove the 18–22% OT overrun on both references.' });
-    remaining -= cut;
-  }
-  let scope = null;
-  if(remaining > 0){
-    const baseTotal = CATS.reduce((s,c)=>s+QUOTE_REQUEST.base_budget_by_category_no_contingency[c],0);
-    scope = { total: remaining, pct: remaining/baseTotal*100, byCat: {} };
-    CATS.forEach(c=>{ scope.byCat[c] = Math.round(remaining * QUOTE_REQUEST.base_budget_by_category_no_contingency[c]/baseTotal); });
-    scope.byCat.material += remaining - CATS.reduce((s,c)=>s+scope.byCat[c],0);
-  }
-  return { allowed, ref, gap, steps, scope };
-}
-function renderTargetPlan(){
-  const p = targetPlan(quoteTargetValue, quoteMarginPct);
-  if(p.gap <= 0){
-    const refMargin = (100*(1 - p.ref/quoteTargetValue)).toFixed(1);
-    return \`<div class="callout info" style="margin:0 0 14px"><span style="color:var(--good);width:16px;height:16px;display:inline-flex;flex-shrink:0">\${iconCheck()}</span><div><b>\${fmtSGD(-p.gap)} of headroom.</b> The reference cost base (\${fmtSGD(p.ref)}) already fits this budget at \${quoteMarginPct}% required margin. At reference cost the margin would be \${refMargin}%.</div></div>\`;
-  }
-  const rows = p.steps.map(s=>\`
-    <div style="display:flex;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px dashed var(--border)">
-      <span class="num" style="color:var(--warn-ink);font-weight:600;white-space:nowrap;min-width:78px">− \${fmtSGD(s.amount)}</span>
-      <div style="flex:1;min-width:0"><b style="font-size:12px">\${s.label}</b><div class="muted" style="font-size:10.5px">\${s.cond}</div></div>
-    </div>\`).join('');
-  const scopeRow = p.scope ? \`
-    <div style="display:flex;gap:10px;align-items:baseline;padding:8px 0">
-      <span class="num" style="color:var(--critical);font-weight:600;white-space:nowrap;min-width:78px">− \${fmtSGD(p.scope.total)}</span>
-      <div style="flex:1;min-width:0"><b style="font-size:12px">Cut scope — \${p.scope.pct.toFixed(1)}% off the historical cost of this work</b>
-        <div class="muted" style="font-size:10.5px">Contingencies alone don't close the gap; the rest comes out of what gets built — a scope decision a person makes with the client. Spread pro-rata that means \${CATS.filter(c=>p.scope.byCat[c]>0).map(c=>\`\${catLabel(c)} −\${fmtSGD(p.scope.byCat[c])}\`).join(' · ')}.</div>
-        \${p.scope.pct>20?\`<div class="mono" style="font-size:9.5px;color:var(--critical);margin-top:5px;letter-spacing:.05em">A CUT THIS DEEP IS A RENEGOTIATION OF PRICE OR SCOPE, NOT AN OPTIMISATION.</div>\`:''}
-      </div>
-    </div>\` : '';
-  return \`<div style="margin-bottom:12px">
-      <div class="section-label">How to close the gap</div>
-      \${rows}\${scopeRow}
+const QUOTE_DRAFTS = (__DATA__.QUOTE_DRAFTS || []);
+const MARGIN_ANCHORS = [
+  { m:30, note:'the plan on both reference jobs — neither delivered it' },
+  { m:28, note:'the reference failure patterns are already priced into the cost as contingency', rec:true },
+  { m:26, note:'best margin actually delivered (Gardens by the Bay Festive 2025)' },
+  { m:24, note:'worst delivered (Orchard Road Christmas 2025)' },
+];
+function quotePrice(m){ return Math.round(costBaseForMargin()/(1-m/100)); }
+function renderMarginLadder(){
+  const base = costBaseForMargin();
+  const anchors = MARGIN_ANCHORS.map(a=>{
+    const price = quotePrice(a.m);
+    const sel = Math.abs(quoteMarginPct-a.m)<0.001;
+    return \`<button class="ml-row" data-margin="\${a.m}" style="display:grid;grid-template-columns:56px 1fr;gap:2px 12px;width:100%;text-align:left;padding:8px 10px;border:1px solid \${sel?'var(--brand)':'var(--border)'};background:\${sel?'var(--brand-bg)':'var(--surface)'};border-radius:3px;cursor:pointer;margin-bottom:6px;font-family:inherit;color:inherit">
+      <span class="num" style="font-weight:700;font-size:15px;\${sel?'color:var(--brand-ink)':''}">\${a.m}%</span>
+      <span style="display:flex;justify-content:space-between;gap:10px;align-items:baseline"><span class="num" style="font-weight:600;font-size:13px">\${fmtSGD(price)}</span><span class="num" style="font-size:11px;color:var(--text-muted)">profit \${fmtSGD(price-base)}</span></span>
+      <span></span><span style="font-size:10.5px;color:var(--text-muted)">\${a.note}\${a.rec?' · <b>recommended</b>':''}</span>
+    </button>\`;
+  }).join('');
+  const isCustom = !MARGIN_ANCHORS.some(a=>Math.abs(a.m-quoteMarginPct)<0.001);
+  return anchors + \`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px dashed \${isCustom?'var(--brand)':'var(--border)'};border-radius:3px;\${isCustom?'background:var(--brand-bg);':''}">
+      <span class="mono" style="font-size:9px;letter-spacing:.08em;color:var(--text-faint)">CUSTOM</span>
+      <input type="number" id="customMarginInput" min="5" max="60" step="0.5" value="\${isCustom?quoteMarginPct:''}" placeholder="—" style="width:64px;padding:4px 6px;border:1px solid var(--border);border-radius:2px;background:var(--surface);color:var(--text);font-family:var(--font-mono);font-size:12px;text-align:right"/>
+      <span style="font-size:11px;color:var(--text-muted)">%</span>
+      <span class="num" id="customMarginOut" style="font-size:11.5px;margin-left:auto">\${isCustom?fmtSGD(quotePrice(quoteMarginPct)):''}</span>
     </div>\`;
-}
-function updateTargetOutputs(){
-  if(quoteMode!=='target') return;
-  const p = targetPlan(quoteTargetValue, quoteMarginPct);
-  const hv = document.getElementById('quoteHeadVal'); if(hv) hv.textContent = fmtSGD(p.allowed);
-  const hm = document.getElementById('quoteHeadMargin'); if(hm) hm.textContent = quoteMarginPct;
-  const te = document.getElementById('tvEcho'); if(te) te.textContent = quoteTargetValue.toLocaleString('en-SG');
-  const gv = document.getElementById('targetGapVal');
-  if(gv){ gv.textContent = (p.gap>0?'−':'+') + fmtSGD(Math.abs(p.gap)); gv.style.color = p.gap>0?'var(--critical)':'var(--good)'; }
-  const out = document.getElementById('contractValOut'); if(out) out.textContent = fmtSGD(p.allowed);
-  const cp = document.getElementById('cutPlanWrap'); if(cp) cp.innerHTML = renderTargetPlan();
 }`);
-// form: mode toggle + client-budget input; margin label adapts
+// form: the margin inputs leave the request card — pricing lives in the quote
 mustReplace(
   `        <div class="field">
-          <label>Target margin</label>`,
-  `        <div class="field">
-          <label>Quote mode</label>
-          <div style="display:flex;border:1px solid var(--border);border-radius:3px;overflow:hidden">
-            <button class="qmode-btn" data-qmode="margin" style="flex:1;padding:6px 4px;font-size:11px;font-weight:600;border:none;cursor:pointer;background:\${quoteMode==='margin'?'var(--brand)':'var(--surface)'};color:\${quoteMode==='margin'?'#fff':'var(--text-muted)'}">Price from margin</button>
-            <button class="qmode-btn" data-qmode="target" style="flex:1;padding:6px 4px;font-size:11px;font-weight:600;border:none;cursor:pointer;background:\${quoteMode==='target'?'var(--brand)':'var(--surface)'};color:\${quoteMode==='target'?'#fff':'var(--text-muted)'}">Fit client budget</button>
+          <label>Target margin</label>
+          <div class="margin-input">
+            <input type="number" id="marginInput" value="\${quoteMarginPct}" min="5" max="60" step="0.5" />
+            <span class="mi-unit">%</span>
           </div>
+          <input type="range" min="10" max="45" step="0.5" value="\${quoteMarginPct}" id="marginSlider" style="width:100%;margin-top:10px;accent-color:var(--brand)"/>
+          <div class="mi-scale"><span>10%</span><span>45%</span></div>
         </div>
-        \${quoteMode==='target'?\`<div class="field">
-          <label>Client budget (contract value)</label>
-          <div class="margin-input"><span class="mi-unit">S$</span><input type="number" id="targetValueInput" value="\${quoteTargetValue}" min="100000" step="10000"/></div>
-        </div>\`:''}
-        <div class="field">
-          <label>\${quoteMode==='target'?'Required margin':'Target margin'}</label>`);
-// formula box adapts to the mode
+`, '');
+// the formula box becomes the pricing ladder + the arithmetic of the selection
 mustReplace(
   `        <div class="formula-box">
           cost base ÷ (1 − target margin)<br/>
           = \${fmtSGD(costBase)} ÷ (1 − <span id="marginEcho">\${quoteMarginPct}</span>%)
           <div class="f-result num" id="contractValOut">\${fmtSGD(contractVal)}</div>
         </div>`,
-  `        \${quoteMode==='margin'?\`<div class="formula-box">
-          cost base ÷ (1 − target margin)<br/>
-          = \${fmtSGD(costBase)} ÷ (1 − <span id="marginEcho">\${quoteMarginPct}</span>%)
-          <div class="f-result num" id="contractValOut">\${fmtSGD(contractVal)}</div>
-        </div>\`:\`<div class="formula-box">
-          client budget × (1 − required margin)<br/>
-          = \${fmtSGD(quoteTargetValue)} × (1 − <span id="marginEcho">\${quoteMarginPct}</span>%)
-          <div class="f-result num" id="contractValOut">\${fmtSGD(targetPlan(quoteTargetValue,quoteMarginPct).allowed)}</div>
-        </div>\`}`);
-// bindings for the toggle and the budget input
+  `        <div class="section-label" style="margin-top:14px">Pricing — margin anchored to your history</div>
+        \${renderMarginLadder()}
+        <div class="formula-box" style="margin-top:10px">
+          price = cost \${fmtSGD(costBase)} ÷ (1 − <span id="marginEcho">\${quoteMarginPct}</span>%)
+          <div class="f-result num" id="contractValOut">\${fmtSGD(quotePrice(quoteMarginPct))}</div>
+        </div>`);
+// the static "send to Sales" button becomes a real write: draft into B1
+mustReplace(
+  `        <button class="btn primary" style="width:100%;justify-content:center;margin-top:14px" id="approveQuoteBtn">Approve &amp; send to Sales</button>
+        <div class="footer-note">Drafted from historical evidence. Review before sending.</div>`,
+  `        \${(()=>{ const price = quotePrice(quoteMarginPct);
+          const last = QUOTE_DRAFTS.length ? QUOTE_DRAFTS[QUOTE_DRAFTS.length-1] : null;
+          return \`
+        <button class="btn primary" style="width:100%;justify-content:center;margin-top:14px" id="approveQuoteBtn">\${iconFile()} Create draft quotation in B1 — \${fmtSGD(price)} at \${quoteMarginPct}%\${last?\` (rev \${last.rev+1})\`:''}</button>
+        \${last?\`<div class="mono" style="font-size:9.5px;color:var(--good);margin-top:8px;display:flex;gap:6px;align-items:center;letter-spacing:.04em"><span style="width:13px;height:13px;display:inline-flex;flex-shrink:0">\${iconCheck()}</span>DRAFT \${last.qr_id} REV \${last.rev} IN PIPELINE · \${fmtSGD(last.contract_value)} AT \${last.margin_pct}% · \${timeAgo(new Date(last.created_at).getTime())}</div>\`:''}
+        <div class="footer-note">Writes a <b>draft</b> quotation into the SAP B1 pipeline — the one write this workspace performs, only on this click. Approving and sending it stays with a person in B1.</div>\`;})()}`);
+// bindings: ladder rows, custom margin, and the real draft POST
 mustReplace(
   `  if(mInput){
     mInput.addEventListener('input', e=>setMargin(e.target.value,'input'));
     mInput.addEventListener('blur',  e=>setMargin(e.target.value,'blur'));
   }`,
-  `  if(mInput){
-    mInput.addEventListener('input', e=>setMargin(e.target.value,'input'));
-    mInput.addEventListener('blur',  e=>setMargin(e.target.value,'blur'));
-  }
-  document.querySelectorAll('.qmode-btn').forEach(el=>el.addEventListener('click', ()=>{
-    if(quoteMode!==el.dataset.qmode){ quoteMode = el.dataset.qmode; render(); }
+  `  document.querySelectorAll('.ml-row').forEach(el=>el.addEventListener('click', ()=>{
+    quoteMarginPct = parseFloat(el.dataset.margin); render();
   }));
-  const tvInput = document.getElementById('targetValueInput');
-  if(tvInput) tvInput.addEventListener('input', e=>{
-    const n = parseFloat(e.target.value);
-    if(!isNaN(n) && n>0){ quoteTargetValue = n; updateTargetOutputs(); }
+  const cmi = document.getElementById('customMarginInput');
+  if(cmi){
+    cmi.addEventListener('input', e=>{
+      const n = parseFloat(e.target.value);
+      const out = document.getElementById('customMarginOut');
+      if(out) out.textContent = (!isNaN(n) && n>=5 && n<=60) ? fmtSGD(quotePrice(n)) : '';
+    });
+    cmi.addEventListener('change', e=>{
+      const n = parseFloat(e.target.value);
+      if(!isNaN(n) && n>=5 && n<=60){ quoteMarginPct = n; render(); }
+    });
+  }`);
+mustReplace(
+  `  const appr = document.getElementById('approveQuoteBtn');
+  if(appr) appr.addEventListener('click', ()=>{
+    toast('Prototype — nothing was sent. Creating a draft quotation is the one thing this workspace writes to SAP Business One, and only a person can trigger it.', { icon: iconCompass('currentColor') });
+    logActivity(\`Draft quote for <b>Gardens by the Bay CNY 2027</b> approved at \${quoteMarginPct}% target margin (S$\${Math.round(suggestedContractValue(quoteMarginPct)).toLocaleString()}) — sent for human review.\`, iconFile());
+  });`,
+  `  const appr = document.getElementById('approveQuoteBtn');
+  if(appr) appr.addEventListener('click', async ()=>{
+    appr.disabled = true;
+    try{
+      const price = quotePrice(quoteMarginPct);
+      const r = await fetch('api/quotes', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ margin_pct: quoteMarginPct, contract_value: price, cost_base: costBaseForMargin() }) });
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const d = await r.json();
+      QUOTE_DRAFTS.push(d);
+      logActivity(\`Draft quotation <b>\${d.qr_id} rev \${d.rev}</b> created in the B1 pipeline — \${fmtSGD(d.contract_value)} at \${d.margin_pct}% margin.\`, iconFile());
+      toast(\`Draft \${d.qr_id} rev \${d.rev} written to the SAP B1 pipeline (simulated). A person approves and sends it from B1.\`, { icon: iconCheck() });
+      render();
+    }catch(e){
+      toast('Could not reach the backend — no draft was created.', { icon: iconAlert() });
+      appr.disabled = false;
+    }
   });`);
 
 /* ---- 2g. finished-job evidence drawer: facts only, no lecturing --------- */
