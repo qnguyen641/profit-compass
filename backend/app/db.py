@@ -51,6 +51,13 @@ CREATE TABLE crew (
   normal_hours REAL, ot_hours REAL,
   PRIMARY KEY (project_id, emp_id)
 );
+CREATE TABLE timesheet_entries (
+  project_id TEXT, emp_id TEXT, date TEXT,
+  clock_in TEXT, clock_out TEXT,
+  hours REAL, ot_hours REAL, hourly_rate REAL,
+  PRIMARY KEY (project_id, emp_id, date)
+);
+CREATE INDEX idx_ts_project ON timesheet_entries(project_id);
 CREATE TABLE risk_alerts (
   id TEXT PRIMARY KEY, project_id TEXT, severity TEXT, status TEXT,
   category TEXT, what_happened TEXT, why_it_matters TEXT,
@@ -160,12 +167,64 @@ def init_db(force: bool = True) -> None:
             (pid, rf["subcontractor_overrun_pct"], rf["labour_ot_overrun_pct"], rf["note"]),
         )
 
+    _generate_timesheets(con, seed)
+
     for key in ("OPEN_PO_TOTAL", "CATS", "LIFECYCLE_STAGES", "DRIVER_NOTES",
-                "PROJECT_LESSON", "CAUSE_LABEL", "QUOTE_REQUEST"):
-        con.execute("INSERT INTO meta VALUES (?,?)", (key, json.dumps(seed[key])))
+                "PROJECT_LESSON", "CAUSE_LABEL", "QUOTE_REQUEST",
+                "LABOUR_RECONCILIATION"):
+        if key in seed:
+            con.execute("INSERT INTO meta VALUES (?,?)", (key, json.dumps(seed[key])))
 
     con.commit()
     con.close()
+
+
+def _generate_timesheets(con, seed) -> None:
+    """Deterministic daily clock-in/clock-out records for every craftsman,
+    reconciling EXACTLY to the per-craftsman normal/overtime totals (which in
+    turn reconcile to the T&A summary, whose cost is hours × rate). This is the
+    evidence layer the blueprint's data checklist requires: employee, date,
+    clock-in, clock-out, hours, overtime, hourly rate."""
+    from datetime import date, timedelta
+
+    START = {"PRJ-001": date(2026, 2, 10), "PRJ-002": date(2025, 2, 14),
+             "PRJ-003": date(2025, 9, 8), "PRJ-004": date(2026, 3, 2)}
+    rows = []
+    for pid, lab in seed.get("LABOUR_BY_PROJECT", {}).items():
+        rate = lab["summary"]["hourly_rate"]
+        start = START.get(pid, date(2026, 1, 5))
+        for member in lab["crew"]:
+            normal, ot = member["normal"], member["ot"]
+            full_days = int(normal // 8)
+            rem = round(normal - full_days * 8, 2)
+            n_days = full_days + (1 if rem else 0)
+            # overtime lands on the final stretch of the assignment, ≤4 h/day —
+            # matching the "compressed window" pattern in the incident records
+            ot_left = ot
+            day_hours = []
+            for i in range(n_days):
+                h = 8 if i < full_days else rem
+                day_hours.append([h, 0.0])
+            i = n_days - 1
+            while ot_left > 0 and i >= 0:
+                take = min(4, ot_left)
+                day_hours[i][1] = take
+                ot_left -= take
+                i -= 1
+            d = start
+            # stagger crew starts so the whole crew doesn't clock in on day one
+            d += timedelta(days=(int(member["id"].split("-")[1]) % 5))
+            for h, oth in day_hours:
+                while d.weekday() == 6:  # no Sunday work
+                    d += timedelta(days=1)
+                start_min = 8 * 60
+                worked_min = int((h + oth) * 60) + 60  # +1 h unpaid break
+                out_min = start_min + worked_min
+                rows.append((pid, member["id"], d.isoformat(),
+                             "08:00", f"{out_min // 60:02d}:{out_min % 60:02d}",
+                             h, oth, rate))
+                d += timedelta(days=1)
+    con.executemany("INSERT INTO timesheet_entries VALUES (?,?,?,?,?,?,?,?)", rows)
 
 
 def meta(con: sqlite3.Connection, key: str):

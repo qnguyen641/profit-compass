@@ -48,5 +48,24 @@ docker compose up -d --build
 - `GET /api/alerts`
 - `POST /api/chat` — `{question, project_id?, history?}` → `{text, chips, open_project, engine}`
 
+- `GET /api/projects/{id}/timesheets` — raw daily clock-in/clock-out records (filter by employee / date range)
+
+## Evidence chain
+
+Every figure on screen is provable from stored records, for every project with
+actuals — delivered (closed) jobs carry the same depth as live ones:
+
+```
+margin → category variance → cost transaction (PO / A/P invoice / payroll line)
+                            → incident documents (GRPO, Goods Return, SO amendment, Service Call)
+labour  → SAP B1 payroll lines (full category)
+        → T&A craftsmen subset: crew totals → daily clock-in/clock-out records
+          (hours × hourly rate = labour cost, reconciled exactly at every level)
+```
+
+The payroll↔T&A reconciliation is explicit per project (`get_labour` /
+`LABOUR_RECONCILIATION`): the B1 labour category is full payroll; the T&A feed
+covers the hourly-craftsmen subset of it.
+
 All data is synthetic. The demo simulates SAP B1 and a Time & Attendance feed;
 no live integration exists (blueprint §10).

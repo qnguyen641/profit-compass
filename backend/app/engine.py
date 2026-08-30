@@ -206,7 +206,37 @@ def labour(con, pid):
     out = dict(s)
     out["ot_by_phase"] = json.loads(out["ot_by_phase"])
     out["crew"] = crew
+    ts = con.execute(
+        "SELECT COUNT(*) n, MIN(date) first, MAX(date) last FROM timesheet_entries "
+        "WHERE project_id=?", (pid,)).fetchone()
+    out["timesheet_records"] = {"count": ts["n"], "first_date": ts["first"], "last_date": ts["last"]}
+    recon = (db.meta(con, "LABOUR_RECONCILIATION") or {}).get(pid)
+    if recon:
+        out["payroll_reconciliation"] = recon
     return out
+
+
+def timesheets(con, pid, emp_id=None, date_from=None, date_to=None, limit=60):
+    """Daily clock-in/clock-out records — the raw Time & Attendance evidence."""
+    q = "SELECT * FROM timesheet_entries WHERE project_id=?"
+    args = [pid]
+    if emp_id:
+        q += " AND emp_id=?"
+        args.append(emp_id)
+    if date_from:
+        q += " AND date>=?"
+        args.append(date_from)
+    if date_to:
+        q += " AND date<=?"
+        args.append(date_to)
+    total = con.execute(f"SELECT COUNT(*) n FROM ({q})", args).fetchone()["n"]
+    rows = [dict(r) for r in con.execute(q + " ORDER BY date, emp_id LIMIT ?",
+                                         args + [limit]).fetchall()]
+    agg = con.execute(
+        f"SELECT SUM(hours) normal, SUM(ot_hours) ot FROM ({q})", args).fetchone()
+    return {"total_records": total,
+            "sum_normal_hours": agg["normal"], "sum_ot_hours": agg["ot"],
+            "entries": rows}
 
 
 def alerts(con, pid=None):

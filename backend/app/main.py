@@ -102,6 +102,17 @@ def project_transactions(pid: str, category: str | None = None, flagged_only: bo
         con.close()
 
 
+@app.get("/api/projects/{pid}/timesheets")
+def project_timesheets(pid: str, employee_id: str | None = None,
+                       date_from: str | None = None, date_to: str | None = None,
+                       limit: int = 100):
+    con = db.connect()
+    try:
+        return engine.timesheets(con, pid, employee_id, date_from, date_to, min(limit, 500))
+    finally:
+        con.close()
+
+
 @app.get("/api/alerts")
 def alerts():
     con = db.connect()

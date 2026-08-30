@@ -24,7 +24,9 @@ Rules:
 - Every figure you state must come from a tool result in this conversation. If the tools cannot answer the question, say so plainly instead of guessing — the whole product rests on not inventing numbers.
 - Currency is SGD; write amounts like S$1,500,000 or S$1.50M. Percentages to one decimal.
 - Be concise: 2–5 sentences for most answers. Lead with the number, then the "why". Name specific transactions (PO-2381), vendors and incidents when they explain a variance.
-- Core formulas: profit = revenue − actual cost; margin% = profit ÷ revenue × 100; forecast = actuals + committed-but-unbilled POs allocated pro-rata to category budget share.
+- Core formulas: profit = revenue − actual cost; margin% = profit ÷ revenue × 100; forecast = actuals + committed-but-unbilled POs allocated pro-rata to category budget share; labour cost = hours worked × hourly rate.
+- Evidence goes all the way down: category → transaction (PO / A/P invoice / payroll line) → incident documents, and for labour down to daily clock-in/clock-out records (get_timesheets). When asked to prove or verify a number, walk that chain. The SAP B1 labour category is full payroll; the T&A feed covers the hourly-craftsmen subset — get_labour returns the reconciliation between the two.
+- Delivered (closed) projects carry the same full ledger, T&A and incident history as live ones. Report them neutrally: budgeted margin vs final margin, what went wrong AND what went right, and the lesson the next quote should inherit.
 - You may use <b>…</b> for emphasis and <br/> for line breaks (answers render as HTML). No other tags, no markdown.
 - You describe and recommend; you never execute changes in SAP B1. A human approves and acts.
 - The user is looking at project {context_project} right now; unqualified questions ("this project", "how are we doing") refer to it. Questions about "best/worst ever", comparisons or the portfolio reach across all projects.
@@ -47,9 +49,18 @@ TOOLS = [
          "flagged_only": {"type": "boolean"}},
          "required": ["project_id"]}},
     {"name": "get_labour",
-     "description": "Time & Attendance detail for a project: craftsmen count, normal/overtime hours, hourly rate, labour cost, overtime by lifecycle phase, and the per-craftsman crew table.",
+     "description": "Time & Attendance detail for a project: craftsmen count, normal/overtime hours, hourly rate, labour cost, overtime by lifecycle phase, the per-craftsman crew table, the count of underlying daily clock records, and the reconciliation between the SAP B1 payroll category and the T&A craftsmen subset.",
      "input_schema": {"type": "object", "properties": {
          "project_id": {"type": "string"}}, "required": ["project_id"]}},
+    {"name": "get_timesheets",
+     "description": "Raw daily Time & Attendance clock records (employee, date, clock-in, clock-out, normal hours, overtime hours, hourly rate) for a project — the lowest-level labour evidence. Filter by employee or date range; returns totals plus up to `limit` rows.",
+     "input_schema": {"type": "object", "properties": {
+         "project_id": {"type": "string"},
+         "employee_id": {"type": "string", "description": "e.g. CR-05"},
+         "date_from": {"type": "string", "description": "YYYY-MM-DD"},
+         "date_to": {"type": "string", "description": "YYYY-MM-DD"},
+         "limit": {"type": "integer"}},
+         "required": ["project_id"]}},
     {"name": "get_risk_alerts",
      "description": "Open profitability risk alerts (severity, what happened, why it matters, expected impact, recommended action), for one project or the whole portfolio.",
      "input_schema": {"type": "object", "properties": {
@@ -92,6 +103,11 @@ def _run_tool(con, name, args):
     if name == "get_labour":
         lab = engine.labour(con, args["project_id"])
         return lab or {"error": "no time & attendance data for this project"}
+    if name == "get_timesheets":
+        return engine.timesheets(
+            con, args["project_id"], args.get("employee_id"),
+            args.get("date_from"), args.get("date_to"),
+            min(int(args.get("limit") or 60), 200))
     if name == "get_risk_alerts":
         return {"alerts": engine.alerts(con, args.get("project_id"))}
     if name == "get_incidents":

@@ -185,14 +185,14 @@
  },
  "DRIVER_NOTES": {
   "PRJ-002": {
-   "labour": "Installation overtime ran 18% over — the same failure mode as the 2026 job.",
+   "labour": "Installation overtime ran 18% over \u2014 the same failure mode as the 2026 job.",
    "subcontractor": "Rigging was committed on a rough estimate rather than a firm quote, and came back 19% higher.",
    "material": "Broadly to plan; the small overrun is late-stage replacement stock.",
    "logistics": "Held to budget under a single haulage contract.",
    "other": "Permits and insurance came in under the allowance."
   },
   "PRJ-003": {
-   "labour": "A compressed install window was absorbed entirely in overtime — 22% over budget.",
+   "labour": "A compressed install window was absorbed entirely in overtime \u2014 22% over budget.",
    "subcontractor": "Quoted firm up front, so the overrun stayed in single digits.",
    "material": "Essentially on plan.",
    "logistics": "Slightly under; the site allowed direct delivery with no interim storage.",
@@ -202,14 +202,14 @@
    "material": "Fabrication buys its materials up front, so this category leads the spend curve at 45% delivered.",
    "labour": "Crew is on plan; installation hours have not started.",
    "subcontractor": "Committed under quote.",
-   "logistics": "Under budget — a single-site job with no haulage between venues.",
+   "logistics": "Under budget \u2014 a single-site job with no haulage between venues.",
    "other": "Under the allowance."
   }
  },
  "PROJECT_LESSON": {
   "PRJ-002": "Two of the three overruns here repeat on the 2026 job. Treat installation overtime and unquoted subcontract as a pattern for this project type, not bad luck.",
   "PRJ-003": "Margin held five points better than Orchard Road because the subcontract was quoted firm. Labour was the entire gap.",
-  "PRJ-004": "Nothing is off plan. The spend curve is front-loaded by design — the test comes when installation labour lands."
+  "PRJ-004": "Nothing is off plan. The spend curve is front-loaded by design \u2014 the test comes when installation labour lands."
  },
  "TRANSACTIONS": [
   {
@@ -218,7 +218,7 @@
    "date": "2026-06-14",
    "category": "material",
    "vendor": "Heng Long Timber Supplies",
-   "description": "Timber — structural framing",
+   "description": "Timber \u2014 structural framing",
    "amount": 46800,
    "quoted_amount": 34900,
    "phase": "fabrication",
@@ -235,12 +235,12 @@
      {
       "type": "A/P Invoice",
       "ref": "API-7712",
-      "note": "S$46,800 — 34% above quote"
+      "note": "S$46,800 \u2014 34% above quote"
      },
      {
       "type": "Business Partner",
       "ref": "V-HLT-004",
-      "note": "Heng Long Timber Supplies · price list revised 2026-05-19"
+      "note": "Heng Long Timber Supplies \u00b7 price list revised 2026-05-19"
      }
     ]
    }
@@ -274,7 +274,7 @@
    "driver": {
     "cause": "rework",
     "incident": "INC-003",
-    "note": "Replacement batch after a colour-fast failure. The material was credited in full — the loss is 140 hours of re-making."
+    "note": "Replacement batch after a colour-fast failure. The material was credited in full \u2014 the loss is 140 hours of re-making."
    }
   },
   {
@@ -402,7 +402,7 @@
    "driver": {
     "cause": "late_delivery",
     "incident": "INC-001",
-    "note": "Carries 210 of the 420 installation overtime hours — the crew absorbing the LED delivery slip."
+    "note": "Carries 210 of the 420 installation overtime hours \u2014 the crew absorbing the LED delivery slip."
    }
   },
   {
@@ -467,7 +467,7 @@
    "tag_status": "tagged",
    "driver": {
     "cause": "estimate_not_quote",
-    "note": "Committed against a budgetary estimate of S$77,800 rather than a firm quote — the same vendor, the same failure, on the 2025 job. Final claim 18.9% higher with no scope change on file.",
+    "note": "Committed against a budgetary estimate of S$77,800 rather than a firm quote \u2014 the same vendor, the same failure, on the 2025 job. Final claim 18.9% higher with no scope change on file.",
     "docs": [
      {
       "type": "Purchase Order",
@@ -543,7 +543,7 @@
    "date": "2026-06-19",
    "category": "logistics",
    "vendor": "(no vendor reference)",
-   "description": "Freight charge — no cost centre or vendor reference on the document",
+   "description": "Freight charge \u2014 no cost centre or vendor reference on the document",
    "amount": 12000,
    "phase": "installation",
    "tag_status": "unallocated",
@@ -592,7 +592,7 @@
    "date": "2026-06-24",
    "category": "other",
    "vendor": "(cost-centre keyword match only)",
-   "description": "Site sundries — matched by cost-centre keyword, not vendor",
+   "description": "Site sundries \u2014 matched by cost-centre keyword, not vendor",
    "amount": 8500,
    "phase": "installation",
    "tag_status": "suggested",
@@ -600,7 +600,7 @@
    "resolved_project_id": "PRJ-001",
    "driver": {
     "cause": "site_match_only",
-    "note": "Matched on a cost-centre keyword, not a vendor or project code. Counted here, but the attribution is inferred — fix the code in SAP B1 to make it certain."
+    "note": "Matched on a cost-centre keyword, not a vendor or project code. Counted here, but the attribution is inferred \u2014 fix the code in SAP B1 to make it certain."
    }
   },
   {
@@ -609,7 +609,7 @@
    "date": "2025-04-08",
    "category": "material",
    "vendor": "Heng Long Timber Supplies",
-   "description": "Timber — structural framing",
+   "description": "Timber \u2014 structural framing",
    "amount": 62000,
    "phase": "fabrication",
    "tag_status": "tagged"
@@ -674,7 +674,7 @@
    "date": "2025-06-14",
    "category": "material",
    "vendor": "GlowTech Lighting Pte Ltd",
-   "description": "LED strip — expedited replacement stock",
+   "description": "LED strip \u2014 expedited replacement stock",
    "amount": 63000,
    "phase": "installation",
    "tag_status": "tagged",
@@ -930,7 +930,7 @@
    "date": "2025-10-06",
    "category": "material",
    "vendor": "Heng Long Timber Supplies",
-   "description": "Timber — structural framing",
+   "description": "Timber \u2014 structural framing",
    "amount": 44600,
    "phase": "fabrication",
    "tag_status": "tagged"
@@ -990,7 +990,7 @@
    "date": "2025-11-25",
    "category": "material",
    "vendor": "GlowTech Lighting Pte Ltd",
-   "description": "LED strip — expedited",
+   "description": "LED strip \u2014 expedited",
    "amount": 28000,
    "phase": "installation",
    "tag_status": "tagged",
@@ -1062,7 +1062,7 @@
    "driver": {
     "cause": "scope_change",
     "incident": "INC-201",
-    "note": "The single largest carrier of the 22% labour overrun — 170 installation overtime hours."
+    "note": "The single largest carrier of the 22% labour overrun \u2014 170 installation overtime hours."
    }
   },
   {
@@ -1078,7 +1078,7 @@
    "driver": {
     "cause": "site_restriction",
     "incident": "INC-203",
-    "note": "Venue access restricted to 22:00–06:00 — a standing condition, budgeted as normal hours."
+    "note": "Venue access restricted to 22:00\u201306:00 \u2014 a standing condition, budgeted as normal hours."
    }
   },
   {
@@ -1127,7 +1127,7 @@
    "tag_status": "tagged",
    "driver": {
     "cause": "price_increase",
-    "note": "Quoted firm at S$54,300 and held to within 8% — the discipline that kept this job five points ahead of Orchard Road."
+    "note": "Quoted firm at S$54,300 and held to within 8% \u2014 the discipline that kept this job five points ahead of Orchard Road."
    }
   },
   {
@@ -1233,6 +1233,172 @@
     "incident": "INC-203",
     "note": "Charged because works ran outside standard hours."
    }
+  },
+  {
+   "id": "PO-4102",
+   "project_id": "PRJ-004",
+   "date": "2026-03-18",
+   "category": "material",
+   "vendor": "Heng Long Timber Supplies",
+   "description": "Timber & board \u2014 activation structures",
+   "amount": 38500,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "PO-4110",
+   "project_id": "PRJ-004",
+   "date": "2026-04-06",
+   "category": "material",
+   "vendor": "BrightLite Displays",
+   "description": "LED modules & screens",
+   "amount": 29800,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "PO-4118",
+   "project_id": "PRJ-004",
+   "date": "2026-04-14",
+   "category": "material",
+   "vendor": "Nova Fabric Co.",
+   "description": "Fabric graphics & branding",
+   "amount": 21400,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "PO-4125",
+   "project_id": "PRJ-004",
+   "date": "2026-03-25",
+   "category": "material",
+   "vendor": "SinCo Hardware",
+   "description": "Fixings & hardware",
+   "amount": 12300,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "PO-4131",
+   "project_id": "PRJ-004",
+   "date": "2026-04-20",
+   "category": "material",
+   "vendor": "Prism Paint & Coatings",
+   "description": "Finishing paint",
+   "amount": 10000,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS4-D-01",
+   "project_id": "PRJ-004",
+   "date": "2026-03-06",
+   "category": "labour",
+   "vendor": "Design Studio (internal)",
+   "description": "Design studio hours",
+   "amount": 14200,
+   "phase": "design",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS4-P-01",
+   "project_id": "PRJ-004",
+   "date": "2026-03-27",
+   "category": "labour",
+   "vendor": "Site Survey Team (internal)",
+   "description": "Procurement / site-survey labour",
+   "amount": 9800,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS4-F-01",
+   "project_id": "PRJ-004",
+   "date": "2026-04-24",
+   "category": "labour",
+   "vendor": "Fabrication Crew (internal)",
+   "description": "Fabrication crew payroll",
+   "amount": 31500,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS4-F-02",
+   "project_id": "PRJ-004",
+   "date": "2026-05-08",
+   "category": "labour",
+   "vendor": "Fabrication Crew (internal)",
+   "description": "Fabrication crew payroll",
+   "amount": 26500,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "SC4-201",
+   "project_id": "PRJ-004",
+   "date": "2026-04-10",
+   "category": "subcontractor",
+   "vendor": "Stellar Rigging & Structures",
+   "description": "Scaffolding & access subcontract",
+   "amount": 23500,
+   "quoted_amount": 24800,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "SC4-210",
+   "project_id": "PRJ-004",
+   "date": "2026-05-02",
+   "category": "subcontractor",
+   "vendor": "Apex Audio-Visual Pte Ltd",
+   "description": "AV subcontract \u2014 deposit on firm quote",
+   "amount": 14500,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "LOG4-501",
+   "project_id": "PRJ-004",
+   "date": "2026-03-30",
+   "category": "logistics",
+   "vendor": "SwiftHaul Logistics",
+   "description": "Storage & warehousing",
+   "amount": 9200,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "LOG4-510",
+   "project_id": "PRJ-004",
+   "date": "2026-05-06",
+   "category": "logistics",
+   "vendor": "SwiftHaul Logistics",
+   "description": "Delivery to site \u2014 single venue, no inter-site haulage",
+   "amount": 12800,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "OTH4-801",
+   "project_id": "PRJ-004",
+   "date": "2026-03-04",
+   "category": "other",
+   "vendor": "InsureAll Brokers",
+   "description": "Project insurance",
+   "amount": 8300,
+   "phase": "design",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "OTH4-810",
+   "project_id": "PRJ-004",
+   "date": "2026-03-21",
+   "category": "other",
+   "vendor": "Site Safety & Permits Co.",
+   "description": "Permits & safety compliance",
+   "amount": 5700,
+   "phase": "procurement",
+   "tag_status": "tagged"
   }
  ],
  "CAUSE_LABEL": {
@@ -1264,7 +1430,7 @@
     {
      "type": "Goods Receipt PO",
      "ref": "GRPO-4471",
-     "note": "posted 2026-06-10 — 8 days late"
+     "note": "posted 2026-06-10 \u2014 8 days late"
     },
     {
      "type": "A/P Invoice",
@@ -1345,14 +1511,14 @@
    "txnIds": [
     "PO-2214"
    ],
-   "detail": "The material was credited in full, so the loss is not in material spend — it is in the 140 hours spent re-making and re-hanging the panels."
+   "detail": "The material was credited in full, so the loss is not in material spend \u2014 it is in the 140 hours spent re-making and re-hanging the panels."
   },
   {
    "id": "INC-004",
    "project_id": "PRJ-001",
    "date": "2026-06-28",
    "kind": "site_restriction",
-   "title": "Orchard Road permit restricted works to 22:00–06:00",
+   "title": "Orchard Road permit restricted works to 22:00\u201306:00",
    "doc": "Service Call",
    "ref": "SVC-337",
    "docs": [
@@ -1392,7 +1558,7 @@
     "procurement": 25
    },
    "txnIds": [],
-   "detail": "35 hours carry no incident, amendment or service call. This is stated rather than absorbed — an unexplained residual is a finding, not a rounding error."
+   "detail": "35 hours carry no incident, amendment or service call. This is stated rather than absorbed \u2014 an unexplained residual is a finding, not a rounding error."
   },
   {
    "id": "INC-101",
@@ -1411,7 +1577,7 @@
     {
      "type": "Goods Receipt PO",
      "ref": "GRPO-3388",
-     "note": "posted 2025-06-12 — 11 days late"
+     "note": "posted 2025-06-12 \u2014 11 days late"
     }
    ],
    "ot_hours": 260,
@@ -1454,7 +1620,7 @@
    "project_id": "PRJ-002",
    "date": "2025-05-28",
    "kind": "rework",
-   "title": "Fixing batch returned — thread tolerance out of spec",
+   "title": "Fixing batch returned \u2014 thread tolerance out of spec",
    "doc": "Goods Return",
    "ref": "GRTN-1704",
    "docs": [
@@ -1518,7 +1684,7 @@
     "event": 10
    },
    "txnIds": [],
-   "detail": "50 hours unexplained on a closed job — the record can no longer be reconstructed."
+   "detail": "50 hours unexplained on a closed job \u2014 the record can no longer be reconstructed."
   },
   {
    "id": "INC-201",
@@ -1579,7 +1745,7 @@
    "project_id": "PRJ-003",
    "date": "2025-11-30",
    "kind": "site_restriction",
-   "title": "Venue access restricted to 22:00–06:00 for public safety",
+   "title": "Venue access restricted to 22:00\u201306:00 for public safety",
    "doc": "Service Call",
    "ref": "SVC-118",
    "docs": [
@@ -1909,6 +2075,63 @@
      "ot": 48
     }
    ]
+  },
+  "PRJ-004": {
+   "summary": {
+    "craftsmen": 5,
+    "normal_hours": 2600,
+    "overtime_hours": 140,
+    "total_hours": 2740,
+    "hourly_rate": 27,
+    "labour_cost": 73980
+   },
+   "ot_by_phase": {
+    "design": 6,
+    "procurement": 24,
+    "fabrication": 110
+   },
+   "crew": [
+    {
+     "id": "CR-02",
+     "name": "Rahman Bin Yusof",
+     "role": "Lead Fabricator",
+     "phase": "fabrication",
+     "normal": 560,
+     "ot": 38
+    },
+    {
+     "id": "CR-03",
+     "name": "Lim Chee Keong",
+     "role": "Fabricator",
+     "phase": "fabrication",
+     "normal": 540,
+     "ot": 32
+    },
+    {
+     "id": "CR-04",
+     "name": "Muthu Kumar",
+     "role": "Fabricator",
+     "phase": "fabrication",
+     "normal": 530,
+     "ot": 28
+    },
+    {
+     "id": "CR-08",
+     "name": "Goh Boon Hock",
+     "role": "Carpenter",
+     "phase": "fabrication",
+     "normal": 500,
+     "ot": 24
+    },
+    {
+     "id": "CR-09",
+     "name": "Zulkifli Hassan",
+     "role": "Painter / Finisher",
+     "phase": "fabrication",
+     "normal": 470,
+     "ot": 18
+    }
+   ]
   }
  },
  "RISK_ALERTS": [
@@ -1922,7 +2145,7 @@
    "why_it_matters": "Largest single driver of margin erosion this period",
    "expected_impact_sgd": -60000,
    "recommended_action": "Review latest purchases before further orders are placed.",
-   "detection": "Category actual exceeded budget by more than 15% — the threshold for a high-severity cost alert.",
+   "detection": "Category actual exceeded budget by more than 15% \u2014 the threshold for a high-severity cost alert.",
    "evidenceIds": [
     "PO-2381",
     "PO-2455",
@@ -1946,7 +2169,7 @@
     "TS-INST-02"
    ],
    "crewEvidence": true,
-   "evidenceNote": "Three of the four highest-overtime crew members are on installation duties. No headcount was added — the same crew absorbed the compression."
+   "evidenceNote": "Three of the four highest-overtime crew members are on installation duties. No headcount was added \u2014 the same crew absorbed the compression."
   },
   {
    "id": "RA-3",
@@ -1961,7 +2184,7 @@
    "recommended_action": "Confirm outstanding PO deliveries and pricing before close.",
    "detection": "Committed-but-unbilled purchase orders exceed 5% of budgeted cost.",
    "evidenceIds": [],
-   "evidenceNote": "These commitments are allocated pro-rata to each category’s budget share to produce the forecast column — they are not yet actual spend."
+   "evidenceNote": "These commitments are allocated pro-rata to each category\u2019s budget share to produce the forecast column \u2014 they are not yet actual spend."
   }
  ],
  "REFERENCE_FACTS": {
@@ -1973,7 +2196,7 @@
   "PRJ-003": {
    "subcontractor_overrun_pct": 8,
    "labour_ot_overrun_pct": 22,
-   "note": "Worse OT overrun — compressed install window."
+   "note": "Worse OT overrun \u2014 compressed install window."
   }
  },
  "QUOTE_REQUEST": {
@@ -1981,7 +2204,7 @@
   "customer": "Gardens by the Bay",
   "project_type": "festive_installation",
   "scope_description": "CNY festive installation, similar footprint to prior Gardens by the Bay and Orchard Road festive jobs.",
-  "target_dates": "Jan 5 – Feb 10, 2027",
+  "target_dates": "Jan 5 \u2013 Feb 10, 2027",
   "reference_project_ids": [
    "PRJ-002",
    "PRJ-003"
@@ -2003,9 +2226,31 @@
    "other": 61000
   },
   "risk_notes": [
-   "Installation overtime ran 18–22% over budget on both reference jobs — recommend pricing in a ~12–15% labour contingency.",
-   "Subcontractor costs ran 8–19% over on reference jobs — get a firm quote before committing, not a rough estimate."
+   "Installation overtime ran 18\u201322% over budget on both reference jobs \u2014 recommend pricing in a ~12\u201315% labour contingency.",
+   "Subcontractor costs ran 8\u201319% over on reference jobs \u2014 get a firm quote before committing, not a rough estimate."
   ],
   "target_margin_pct_default": 28
+ },
+ "LABOUR_RECONCILIATION": {
+  "PRJ-001": {
+   "payroll_total_b1": 265000,
+   "ta_craftsmen_cost": 135800,
+   "note": "T&A covers the 10 hourly craftsmen (4,850 h \u00d7 S$28). The remaining S$129,200 of the B1 labour category is salaried/internal-team payroll posted as TS-* lines (design studio, site survey, event-day and dismantling crews)."
+  },
+  "PRJ-002": {
+   "payroll_total_b1": 277000,
+   "ta_craftsmen_cost": 139860,
+   "note": "T&A covers the 11 hourly craftsmen (5,180 h \u00d7 S$27); the rest of the labour category is salaried/internal-team payroll lines."
+  },
+  "PRJ-003": {
+   "payroll_total_b1": 214000,
+   "ta_craftsmen_cost": 101790,
+   "note": "T&A covers the 8 hourly craftsmen (3,770 h \u00d7 S$27); the rest of the labour category is salaried/internal-team payroll lines."
+  },
+  "PRJ-004": {
+   "payroll_total_b1": 82000,
+   "ta_craftsmen_cost": 73980,
+   "note": "T&A covers the 5 hourly craftsmen (2,740 h \u00d7 S$27); the rest is design-studio and survey payroll."
+  }
  }
 }
