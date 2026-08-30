@@ -1813,13 +1813,16 @@ function renderProgressPanel(pid){
   const p = project(pid), snap = snapshot(pid);
   const budgetCost = budgetTotalCost(pid);
   let phaseBlock = '';
-  if(pid==='PRJ-001'){
+  const phaseSpend = (()=>{ const o={}; LIFECYCLE_STAGES.forEach(x=>o[x]=0);
+    TRANSACTIONS.filter(t=>t.project_id===pid||t.resolved_project_id===pid)
+      .forEach(t=>{ o[t.phase]=(o[t.phase]||0)+t.amount; }); return o; })();
+  if(LIFECYCLE_STAGES.some(x=>phaseSpend[x]>0)){
     const phases = LIFECYCLE_STAGES;
-    const maxPhase = Math.max(...phases.map(ph=>SPEND_BY_PHASE[ph]||0));
-    const curIdx = phases.indexOf(p.lifecycle_stage);
+    const maxPhase = Math.max(...phases.map(ph=>phaseSpend[ph]||0));
+    const curIdx = d.isFinal ? phases.length : phases.indexOf(p.lifecycle_stage);
     phaseBlock = `
       <div class="phase-strip">${phases.map((ph,i)=>{
-        const amt = SPEND_BY_PHASE[ph]||0;
+        const amt = phaseSpend[ph]||0;
         const h = maxPhase ? Math.max(3, amt/maxPhase*100) : 3;
         const cls = i<curIdx ? 'past' : i===curIdx ? 'current' : 'future';
         return `<div class="ph-col ${cls}" title="${catLabel(ph)} — ${fmtSGD(amt)}">
@@ -1828,12 +1831,16 @@ function renderProgressPanel(pid){
           <span class="ph-name">${ph}</span>
         </div>`;
       }).join('')}</div>
-      <div class="phase-legend"><span class="pl-cur"></span>Current phase · bar height = spend recorded in that phase</div>`;
+      <div class="phase-legend">${d.isFinal?'All phases delivered · bar height = spend recorded in that phase':'<span class="pl-cur"></span>Current phase · bar height = spend recorded in that phase'}</div>`;
   }
 
   const note = d.isFinal
     ? `Closed at ${fmtSGD(snap.actual_cost)} against ${fmtSGD(budgetCost)} planned — ${fmtSGD(snap.actual_cost-budgetCost)} over.`
-    : `${fmtSGD(snap.actual_cost)} of ${fmtSGD(budgetCost)} planned cost is committed with ${100-d.donePct}% of the job still to deliver.`;
+    : (()=>{ const fcCost = snap.forecast_final_cost != null ? snap.forecast_final_cost
+        : (snap.forecast_final_margin_pct != null ? Math.round(snap.revenue*(1-snap.forecast_final_margin_pct/100)) : null);
+      const fb = fcCost ? Math.round(snap.actual_cost/fcCost*100) : null;
+      return `${fmtSGD(snap.actual_cost)} of ${fmtSGD(budgetCost)} planned cost is committed with ${100-d.donePct}% of the job still to deliver`
+        + (fcCost ? ` — and ${fb}% of the ${fmtSGD(fcCost)} forecast final cost.` : '.'); })();
 
   return `
     <div class="card pad" style="margin-bottom:16px">
@@ -1845,7 +1852,7 @@ function renderProgressPanel(pid){
           <span class="burn-v num">${d.donePct}%</span>
         </div>
         <div class="burn-row">
-          <span class="burn-k">Budget spent</span>
+          <span class="burn-k">Planned cost spent</span>
           <span class="burn-track"><span class="burn-fill ${d.burnPct>d.donePct?'over':'ok'}" style="width:${Math.min(100,d.burnPct)}%"></span><span class="burn-mark" style="left:${Math.min(100,d.donePct)}%"></span></span>
           <span class="burn-v num ${d.burnPct>d.donePct?'bad':''}">${d.burnPct}%</span>
         </div>

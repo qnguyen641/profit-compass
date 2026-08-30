@@ -600,6 +600,41 @@ mustReplace(
     }
   }`);
 
+/* ---- 2k. phase-spend chart for every project with a ledger -------------- */
+// The mock hard-gated the lifecycle bar chart to PRJ-001 (only it had rows
+// then). Every project now carries a full ledger, so the chart renders for
+// all of them — completed jobs show all phases as delivered.
+mustReplace(
+  `  let phaseBlock = '';
+  if(pid==='PRJ-001'){
+    const phases = LIFECYCLE_STAGES;
+    const maxPhase = Math.max(...phases.map(ph=>SPEND_BY_PHASE[ph]||0));
+    const curIdx = phases.indexOf(p.lifecycle_stage);`,
+  `  let phaseBlock = '';
+  const phaseSpend = (()=>{ const o={}; LIFECYCLE_STAGES.forEach(x=>o[x]=0);
+    TRANSACTIONS.filter(t=>t.project_id===pid||t.resolved_project_id===pid)
+      .forEach(t=>{ o[t.phase]=(o[t.phase]||0)+t.amount; }); return o; })();
+  if(LIFECYCLE_STAGES.some(x=>phaseSpend[x]>0)){
+    const phases = LIFECYCLE_STAGES;
+    const maxPhase = Math.max(...phases.map(ph=>phaseSpend[ph]||0));
+    const curIdx = d.isFinal ? phases.length : phases.indexOf(p.lifecycle_stage);`);
+mustReplace(
+  `        const amt = SPEND_BY_PHASE[ph]||0;`,
+  `        const amt = phaseSpend[ph]||0;`);
+mustReplace(
+  `      <div class="phase-legend"><span class="pl-cur"></span>Current phase · bar height = spend recorded in that phase</div>`,
+  `      <div class="phase-legend">\${d.isFinal?'All phases delivered · bar height = spend recorded in that phase':'<span class="pl-cur"></span>Current phase · bar height = spend recorded in that phase'}</div>`);
+// burn rows name their denominator: 101% is of the PLANNED cost, and the
+// note also states how much of the FORECAST final cost is already in
+mustReplace('<span class="burn-k">Budget spent</span>', '<span class="burn-k">Planned cost spent</span>');
+mustReplace(
+  "    : `\${fmtSGD(snap.actual_cost)} of \${fmtSGD(budgetCost)} planned cost is committed with \${100-d.donePct}% of the job still to deliver.`;",
+  `    : (()=>{ const fcCost = snap.forecast_final_cost != null ? snap.forecast_final_cost
+        : (snap.forecast_final_margin_pct != null ? Math.round(snap.revenue*(1-snap.forecast_final_margin_pct/100)) : null);
+      const fb = fcCost ? Math.round(snap.actual_cost/fcCost*100) : null;
+      return \`\${fmtSGD(snap.actual_cost)} of \${fmtSGD(budgetCost)} planned cost is committed with \${100-d.donePct}% of the job still to deliver\`
+        + (fcCost ? \` — and \${fb}% of the \${fmtSGD(fcCost)} forecast final cost.\` : '.'); })();`);
+
 /* ---- 2b. copy tweaks: the answers are no longer scripted ---------------- */
 html = html.replace(/Prototype — answers come from a scripted set\.?/g,
   'AI answers are computed from the workspace database.');
