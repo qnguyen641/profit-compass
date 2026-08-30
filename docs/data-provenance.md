@@ -51,6 +51,33 @@ what needs operational discipline, and what must be built.
   documents it read. In the demo the sentences are pre-authored; the chat
   answers are already generated live from the database by the same pattern.
 
+## Where the fix is process, not software
+
+A supplier reprice is a **communication event, not a price event**. The
+PO-2381 pattern shows what happens when the communication loop is missing:
+quote given 2026-04-02 → ten weeks of silence → order placed without
+re-confirming → supplier reprices in between → the A/P invoice matches the
+new price, so the three-way match (PO ↔ goods receipt ↔ invoice) passes and
+nothing flags. The control "worked" — around an agreement that was never
+actually re-made.
+
+The proper loop, and where a system can hold it:
+
+1. **Quotes carry a validity date** (B1 Purchase Quotations have one).
+   Ordering after expiry should warn or block until the price is
+   re-confirmed — a preventive control at PO time, not a detective one at
+   invoice time.
+2. **A reprice must be an explicit, recorded agreement**: supplier notifies →
+   buyer accepts or renegotiates → the quotation/PO is amended *before*
+   goods ship, with who-approved-when on record. If the buyer silently
+   re-types the new price into the PO, the three-way match is bypassed by
+   design.
+3. **What this workspace adds**: it cannot force the conversation, but it
+   makes silence visible — quote-vs-paid variance where a reference exists,
+   NO QUOTE ON FILE where it doesn't, and the vendor's full track record —
+   so the finding lands on the process ("re-confirm before ordering;
+   capture quotes on every PO"), not on a lump of overspend.
+
 ## The honest one-liner for the demo room
 
 > The documents, dates and amounts behind every red row are standard SAP B1
