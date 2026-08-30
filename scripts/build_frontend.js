@@ -79,9 +79,13 @@ html = html.slice(0, rscStart) + helper + `
 function runSuggestedChat(key){
   if(key==='portfolio-risk') askBackend('Which project is most at risk?');
   else if(key==='best-ever') askBackend('Which project made the best margin?');
+  else if(key==='plan-match') askBackend('Which project landed closest to its planned margin, and which missed its plan by the most?');
   else if(key==='prj1-profit') askBackend('How profitable is the Orchard Road Christmas project?', { after:()=>{ state.chatFollowupReady = true; renderChatTab(); } });
   else if(key==='this-project') askBackend('How did ' + project(state.selectedProject).name + ' do?');
+  else if(key==='forecast-why') askBackend('What is the forecast final margin for ' + project(state.selectedProject).name + ', and what is driving it?');
   else if(key==='follow-why'){ state.chatFollowupReady = false; askBackend('Why is the forecast margin lower than target?'); }
+  else if(key==='quote-ref-labour') askBackend('Compare what labour actually cost on Orchard Road Christmas 2025 and Gardens by the Bay Festive 2025, and why it overran on both.');
+  else if(key==='quote-why-cont') askBackend('Why does the CNY 2027 quote carry labour and subcontractor contingencies, and how large are they?');
 }
 
 ` + html.slice(rscEnd);
@@ -156,10 +160,10 @@ mustReplace("  if(document.getElementById('qsearch') && !state.quoteSearched) se
 //     to Regenerate, and a run-complete line appears
 mustReplace(
   "searchTimers.push(setTimeout(()=>{ wrap.classList.add('revealed'); state.quoteSearched = true; }, rows.length*RUN + 340));",
-  "searchTimers.push(setTimeout(()=>{ state.quoteSearched = true; render(); }, rows.length*RUN + 340));");
+  "searchTimers.push(setTimeout(()=>{ state.quoteSearched = true; quoteRunning = false; render(); }, rows.length*RUN + 340));");
 mustReplace(
   "if(reduce){ rows.forEach(r=>r.classList.add('done')); wrap.classList.add('revealed'); state.quoteSearched = true; return; }",
-  "if(reduce){ state.quoteSearched = true; render(); return; }");
+  "if(reduce){ state.quoteSearched = true; quoteRunning = false; render(); return; }");
 // (c) run-complete indicator under the button
 mustReplace(
   '<button class="btn primary" id="runSearchBtn" style="width:100%;justify-content:center">${iconCompass(\'currentColor\')} ${done?\'Regenerate quote\':\'Generate quote\'}</button>',
@@ -182,8 +186,8 @@ mustReplace(
     + '</div>\n        ';
   const placeholder =
     '<div class="empty-note" style="padding:30px 16px;text-align:center;line-height:1.6">'
-    + 'No quote yet.<br/>Set the target margin, then press <b>Generate quote</b> — '
-    + 'the draft is built category by category from the actuals of your delivered jobs.'
+    + '${quoteRunning ? `Searching delivered jobs…` : `No quote yet.<br/>Press <b>Generate quote</b> — '
+    + 'the estimate is built category by category from the actuals of your delivered jobs.`}'
     + '</div>';
   html = html.slice(0, cs) + '${done ? `' + headline + content + '` : `' + placeholder + '`}' + html.slice(ce);
 }
@@ -239,6 +243,7 @@ mustReplace(
 mustReplace(
   'let quoteMarginPct = QUOTE_REQUEST.target_margin_pct_default;',
   `let quoteMarginPct = QUOTE_REQUEST.target_margin_pct_default;
+let quoteRunning = false;
 const QUOTE_DRAFTS = (__DATA__.QUOTE_DRAFTS || []);
 const MARGIN_ANCHORS = [
   { m:30, note:'the plan on both reference jobs — neither delivered it' },
@@ -501,6 +506,72 @@ mustReplace(
   + '</div>\n'
   + '        <div class="section-label" style="margin-top:14px">Where the money goes</div>\n'
   + '        ${renderQuoteBuildup()}');
+
+/* ---- 2i. final flow polish: evidence appears AFTER the run -------------- */
+// (a) right column is empty until Generate is pressed: the scan rows render
+//     only while running or done, and the evidence cards only when done
+mustReplace(
+  `          <ul class="scan-list" id="scanList">\${scanRows}</ul>
+          <div class="scan-result" id="scanResult">
+            Matched <b>\${QUOTE_REQUEST.reference_project_ids.length} of \${cands.length}</b> past jobs on project type and scope. Their overrun patterns are priced into the quote on the left.
+          </div>
+        </section>
+        <div class="qresult">
+          <div class="section-label">Evidence — the jobs this price is built on</div>
+          <div class="ref-grid">\${refCards}</div>
+        </div>`,
+  `          \${(done||quoteRunning)?\`<ul class="scan-list" id="scanList">\${scanRows}</ul>
+          <div class="scan-result" id="scanResult">
+            Matched <b>\${QUOTE_REQUEST.reference_project_ids.length} of \${cands.length}</b> past jobs on project type and scope. Their overrun patterns are priced into the quote on the left.
+          </div>\`:\`<div class="empty-note" style="padding:16px 12px">Nothing searched yet. Press <b>Generate quote</b> — the pipeline scans your delivered jobs and its evidence appears here.</div>\`}
+        </section>
+        \${done?\`<div class="qresult">
+          <div class="section-label">Evidence — the jobs this price is built on</div>
+          <div class="ref-grid">\${refCards}</div>
+        </div>\`:''}`);
+// (b) Generate first re-renders into the running state, then plays the scan
+mustReplace(
+  "  const runSearch = document.getElementById('runSearchBtn');\n  if(runSearch) runSearch.addEventListener('click', ()=>{ state.quoteSearched=false; playQuoteSearch(); });",
+  "  const runSearch = document.getElementById('runSearchBtn');\n  if(runSearch) runSearch.addEventListener('click', ()=>{ state.quoteSearched=false; quoteRunning=true; render(); setTimeout(playQuoteSearch, 60); });");
+// (c) hide the 'New Quote' card — the quoting job in the pipeline (PRJ-005)
+//     is the entry point; creating brand-new quotes isn't designed yet
+mustReplace('${(state.portfolioFilter===\'all\'&&!q)?newQuoteCard:\'\'}', '');
+// (d) chat during quoting: the history is exactly what's worth asking about
+mustReplace(
+  `  if(state.screen==='D'){
+    body.innerHTML = \`<div class="empty-note">This quote isn't contracted yet, so there are no actuals to ask about. Approve it to start tracking.</div>\`;
+    suggest.innerHTML = ''; return;
+  }`,
+  `  if(state.screen==='D' && !state.chatLog.length){
+    body.innerHTML = \`
+      <div class="chat-intro">
+        <div class="ci-mark">\${aiMark()}<span>Synthesis</span></div>
+        <p>This quote isn't contracted yet — but the history behind it is. Ask what <b>the reference jobs</b> spent on any category, transaction by transaction, or why this draft carries the contingencies it does.</p>
+        <div class="ci-sources">
+          <span><span class="sc-dot" style="background:var(--brand)"></span>SAP Business One</span>
+          <span><span class="sc-dot" style="background:var(--cat-labour)"></span>Time &amp; Attendance</span>
+        </div>
+      </div>\`;
+    suggest.innerHTML = \`<button class="chat-chip" data-suggest="quote-ref-labour">What did labour really cost on the reference jobs?</button>\`
+      + \`<button class="chat-chip" data-suggest="quote-why-cont">Why the contingencies in this quote?</button>\`;
+    return;
+  }`);
+// (e) per-screen suggested questions match the agreed scopes
+mustReplace(
+  `    suggest.innerHTML = (state.screen==='B' && hasAnalytics(state.selectedProject)
+        ? (state.selectedProject==='PRJ-001'
+            ? \`<button class="chat-chip" data-suggest="prj1-profit">How profitable is this project?</button>\`
+            : \`<button class="chat-chip" data-suggest="this-project">How did this project do?</button>\`)
+        : \`<button class="chat-chip" data-suggest="portfolio-risk">Which project is most at risk?</button>\`)
+      + \`<button class="chat-chip" data-suggest="best-ever">Best margin we've ever made?</button>\`;`,
+  `    suggest.innerHTML = (state.screen==='B' && hasAnalytics(state.selectedProject)
+        ? (state.selectedProject==='PRJ-001'
+            ? \`<button class="chat-chip" data-suggest="prj1-profit">How profitable is this project?</button>\`
+            : \`<button class="chat-chip" data-suggest="this-project">How did this project do?</button>\`)
+          + (!SNAPSHOTS[state.selectedProject].final ? \`<button class="chat-chip" data-suggest="forecast-why">What's the forecast, and why?</button>\` : '')
+        : \`<button class="chat-chip" data-suggest="portfolio-risk">Which project is most at risk?</button>\`
+          + \`<button class="chat-chip" data-suggest="plan-match">Who landed closest to plan?</button>\`)
+      + \`<button class="chat-chip" data-suggest="best-ever">Best margin we've ever made?</button>\`;`);
 
 /* ---- 2b. copy tweaks: the answers are no longer scripted ---------------- */
 html = html.replace(/Prototype — answers come from a scripted set\.?/g,

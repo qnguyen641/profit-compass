@@ -1582,7 +1582,7 @@ function renderPortfolioGrid(){
     <div style="font-size:11.5px">Draft from reference projects</div>
   </div>`;
   wrap.innerHTML = filtered.length
-    ? `<div class="grid proj-grid">${cards}${(state.portfolioFilter==='all'&&!q)?newQuoteCard:''}</div>`
+    ? `<div class="grid proj-grid">${cards}</div>`
     : `<div class="card no-results">No projects match "${state.portfolioQuery}". <button class="btn ghost sm" id="clearPortfolioFilter" style="margin-top:10px">Clear filters</button></div>`;
   const nqBtn = document.getElementById('newQuoteBtn'); if(nqBtn) nqBtn.addEventListener('click', ()=>{ state.screen='D'; navigateAndRender(); });
   const clearBtn = document.getElementById('clearPortfolioFilter');
@@ -1891,6 +1891,7 @@ function renderVarianceTable(pid){
 
 /* ---------- Screen D: Quotation Assistant ---------- */
 let quoteMarginPct = QUOTE_REQUEST.target_margin_pct_default;
+let quoteRunning = false;
 const QUOTE_DRAFTS = (__DATA__.QUOTE_DRAFTS || []);
 const MARGIN_ANCHORS = [
   { m:30, note:'the plan on both reference jobs — neither delivered it' },
@@ -2048,21 +2049,21 @@ function renderScreenD(){
           return `
         <button class="btn primary" style="width:100%;justify-content:center;margin-top:14px" id="approveQuoteBtn">${iconFile()} Create draft quotation in B1 — ${fmtSGD(price)} at ${quoteMarginPct}%${last?` (rev ${last.rev+1})`:''}</button>
         ${last?`<div class="mono" style="font-size:9.5px;color:var(--good);margin-top:8px;display:flex;gap:6px;align-items:center;letter-spacing:.04em"><span style="width:13px;height:13px;display:inline-flex;flex-shrink:0">${iconCheck()}</span>DRAFT ${last.qr_id} REV ${last.rev} IN PIPELINE · ${fmtSGD(last.contract_value)} AT ${last.margin_pct}% · ${timeAgo(new Date(last.created_at).getTime())}</div>`:''}
-        <div class="footer-note">Writes a <b>draft</b> quotation into the SAP B1 pipeline — the one write this workspace performs, only on this click. Approving and sending it stays with a person in B1.</div>`;})()}` : `<div class="empty-note" style="padding:30px 16px;text-align:center;line-height:1.6">No quote yet.<br/>Set the target margin, then press <b>Generate quote</b> — the draft is built category by category from the actuals of your delivered jobs.</div>`}
+        <div class="footer-note">Writes a <b>draft</b> quotation into the SAP B1 pipeline — the one write this workspace performs, only on this click. Approving and sending it stays with a person in B1.</div>`;})()}` : `<div class="empty-note" style="padding:30px 16px;text-align:center;line-height:1.6">${quoteRunning ? `Searching delivered jobs…` : `No quote yet.<br/>Press <b>Generate quote</b> — the estimate is built category by category from the actuals of your delivered jobs.`}</div>`}
       </div>
 
       <div>
         <section class="qsearch${done?' revealed':''}" id="qsearch">
           <div class="section-label" style="margin-bottom:10px">${aiMark()} Searching delivered jobs</div>
-          <ul class="scan-list" id="scanList">${scanRows}</ul>
+          ${(done||quoteRunning)?`<ul class="scan-list" id="scanList">${scanRows}</ul>
           <div class="scan-result" id="scanResult">
             Matched <b>${QUOTE_REQUEST.reference_project_ids.length} of ${cands.length}</b> past jobs on project type and scope. Their overrun patterns are priced into the quote on the left.
-          </div>
+          </div>`:`<div class="empty-note" style="padding:16px 12px">Nothing searched yet. Press <b>Generate quote</b> — the pipeline scans your delivered jobs and its evidence appears here.</div>`}
         </section>
-        <div class="qresult">
+        ${done?`<div class="qresult">
           <div class="section-label">Evidence — the jobs this price is built on</div>
           <div class="ref-grid">${refCards}</div>
-        </div>
+        </div>`:''}
       </div>
 
     </div>
@@ -2078,7 +2079,7 @@ function playQuoteSearch(){
   searchTimers.forEach(clearTimeout); searchTimers = [];
   const rows = [...wrap.querySelectorAll('.sc-row')];
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(reduce){ state.quoteSearched = true; render(); return; }
+  if(reduce){ state.quoteSearched = true; quoteRunning = false; render(); return; }
   wrap.classList.remove('revealed');
   rows.forEach(r=>r.classList.remove('done','active'));
   const RUN = 780;
@@ -2086,7 +2087,7 @@ function playQuoteSearch(){
     searchTimers.push(setTimeout(()=>r.classList.add('active'), i*RUN));
     searchTimers.push(setTimeout(()=>{ r.classList.remove('active'); r.classList.add('done'); }, i*RUN + 480));
   });
-  searchTimers.push(setTimeout(()=>{ state.quoteSearched = true; render(); }, rows.length*RUN + 340));
+  searchTimers.push(setTimeout(()=>{ state.quoteSearched = true; quoteRunning = false; render(); }, rows.length*RUN + 340));
 }
 
 /* Evidence drawer — the key facts of one reference job, with a route into its
@@ -2696,9 +2697,19 @@ function closeAlertDrawer(){
 function renderChatTab(){
   const body = document.getElementById('aiBody');
   const suggest = document.getElementById('aiSuggest');
-  if(state.screen==='D'){
-    body.innerHTML = `<div class="empty-note">This quote isn't contracted yet, so there are no actuals to ask about. Approve it to start tracking.</div>`;
-    suggest.innerHTML = ''; return;
+  if(state.screen==='D' && !state.chatLog.length){
+    body.innerHTML = `
+      <div class="chat-intro">
+        <div class="ci-mark">${aiMark()}<span>Synthesis</span></div>
+        <p>This quote isn't contracted yet — but the history behind it is. Ask what <b>the reference jobs</b> spent on any category, transaction by transaction, or why this draft carries the contingencies it does.</p>
+        <div class="ci-sources">
+          <span><span class="sc-dot" style="background:var(--brand)"></span>SAP Business One</span>
+          <span><span class="sc-dot" style="background:var(--cat-labour)"></span>Time &amp; Attendance</span>
+        </div>
+      </div>`;
+    suggest.innerHTML = `<button class="chat-chip" data-suggest="quote-ref-labour">What did labour really cost on the reference jobs?</button>`
+      + `<button class="chat-chip" data-suggest="quote-why-cont">Why the contingencies in this quote?</button>`;
+    return;
   }
   if(state.screen==='S'){
     body.innerHTML = `<div class="empty-note">This screen is workspace configuration. Open a project to ask about its numbers.</div>`;
@@ -2719,7 +2730,9 @@ function renderChatTab(){
         ? (state.selectedProject==='PRJ-001'
             ? `<button class="chat-chip" data-suggest="prj1-profit">How profitable is this project?</button>`
             : `<button class="chat-chip" data-suggest="this-project">How did this project do?</button>`)
-        : `<button class="chat-chip" data-suggest="portfolio-risk">Which project is most at risk?</button>`)
+          + (!SNAPSHOTS[state.selectedProject].final ? `<button class="chat-chip" data-suggest="forecast-why">What's the forecast, and why?</button>` : '')
+        : `<button class="chat-chip" data-suggest="portfolio-risk">Which project is most at risk?</button>`
+          + `<button class="chat-chip" data-suggest="plan-match">Who landed closest to plan?</button>`)
       + `<button class="chat-chip" data-suggest="best-ever">Best margin we've ever made?</button>`;
     return;
   }
@@ -2811,9 +2824,13 @@ async function askBackend(questionText, opts={}){
 function runSuggestedChat(key){
   if(key==='portfolio-risk') askBackend('Which project is most at risk?');
   else if(key==='best-ever') askBackend('Which project made the best margin?');
+  else if(key==='plan-match') askBackend('Which project landed closest to its planned margin, and which missed its plan by the most?');
   else if(key==='prj1-profit') askBackend('How profitable is the Orchard Road Christmas project?', { after:()=>{ state.chatFollowupReady = true; renderChatTab(); } });
   else if(key==='this-project') askBackend('How did ' + project(state.selectedProject).name + ' do?');
+  else if(key==='forecast-why') askBackend('What is the forecast final margin for ' + project(state.selectedProject).name + ', and what is driving it?');
   else if(key==='follow-why'){ state.chatFollowupReady = false; askBackend('Why is the forecast margin lower than target?'); }
+  else if(key==='quote-ref-labour') askBackend('Compare what labour actually cost on Orchard Road Christmas 2025 and Gardens by the Bay Festive 2025, and why it overran on both.');
+  else if(key==='quote-why-cont') askBackend('Why does the CNY 2027 quote carry labour and subcontractor contingencies, and how large are they?');
 }
 
 /* The typed-question router. Anything it cannot ground in the data is declined. */
@@ -3210,7 +3227,7 @@ function bindScreenEvents(){
     });
   }
   const runSearch = document.getElementById('runSearchBtn');
-  if(runSearch) runSearch.addEventListener('click', ()=>{ state.quoteSearched=false; playQuoteSearch(); });
+  if(runSearch) runSearch.addEventListener('click', ()=>{ state.quoteSearched=false; quoteRunning=true; render(); setTimeout(playQuoteSearch, 60); });
   document.querySelectorAll('[data-evidence-open]').forEach(el=>el.addEventListener('click', e=>{
     e.stopPropagation(); openEvidenceDrawer(el.dataset.evidenceOpen);
   }));
