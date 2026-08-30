@@ -2209,9 +2209,9 @@ function txnAverage(cat, pid){
   return rows.length ? rows.reduce((s,t)=>s+t.amount,0)/rows.length : 0;
 }
 function isFlagged(t){
+  if(t.driver) return true;
   if(t.quoted_amount){ return (t.amount-t.quoted_amount)/t.quoted_amount > 0.15; }
-  const avg = txnAverage(t.category, t.project_id || t.resolved_project_id);
-  return avg ? Math.abs(t.amount-avg)/avg > 0.6 : false;
+  return false;
 }
 function openDrilldown(category, highlightId, pid){
   state.ddOpen = true; state.ddCategory = category; state.ddHighlightId = highlightId || null;
@@ -2400,7 +2400,7 @@ function renderDrilldown(){
     </section>`;
 
   document.getElementById('ddBody').innerHTML = summary + driverBlock + crewBlock + vendorBlock + table + `
-    <div class="callout info" style="margin-top:4px">${iconInfo()}<div><b>Attribution is read-only.</b> Tagged rows carry a project code from SAP B1. The rest are matched here for analysis only — <b>inherited</b> (vendor + date), <b>suggested</b> (keyword), <b>unallocated</b> (site match alone). This workspace cannot write a code back; correcting one is a change a person makes in B1.</div></div>`;
+    <div class="callout info" style="margin-top:4px">${iconInfo()}<div><b>This ledger is read-only.</b> Every row carries a project code from SAP Business One. A <span style="color:var(--critical);font-weight:600">red row</span> has a stated reason — a named cost driver or a price above its firm quote — and clicking it opens the arithmetic and the B1 documents behind it. Correcting a posting is a change a person makes in B1.</div></div>`;
 
   const hlRow = document.getElementById('ddHighlightRow');
   if(hlRow) setTimeout(()=>hlRow.scrollIntoView({block:'center', behavior:'smooth'}), 80);

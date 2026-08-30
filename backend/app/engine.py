@@ -289,8 +289,10 @@ def transactions(con, pid=None, category=None, flagged_only=False, limit=60):
     q += " ORDER BY date"
     rows = [dict(r) for r in con.execute(q, args).fetchall()]
     if flagged_only:
-        rows = [r for r in rows if r["driver_cause"] or r["tag_status"] != "tagged"
-                or (r["quoted_amount"] and r["amount"] > r["quoted_amount"])]
+        # flagged = a stated reason exists: a named cost driver, or >15% above
+        # a firm quote (mirrors the frontend's red-row rule)
+        rows = [r for r in rows if r["driver_cause"]
+                or (r["quoted_amount"] and r["amount"] > r["quoted_amount"] * 1.15)]
     for r in rows:
         if r.get("driver_docs"):
             r["driver_docs"] = json.loads(r["driver_docs"])

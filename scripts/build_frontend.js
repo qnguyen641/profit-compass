@@ -129,6 +129,29 @@ mustReplace(
   'detail:()=>`Permits, insurance and site cleaning all tracked to budget. Confirm the suggested attribution before treating the underspend as real.`',
   'detail:()=>`Permits, insurance and site cleaning all tracked to budget, with a small underspend on the allowance.`');
 
+/* ---- 2e. red means a stated reason, never a statistical hunch ----------- */
+// The mock also flagged any row >60% away from the category average — a pure
+// outlier heuristic that painted rows red with no reason shown and nothing to
+// click. Retired: a row is red ONLY when it carries a named cost driver or
+// sits >15% above its firm quote — both open the driver drawer with the
+// arithmetic and the SAP B1 documents behind it.
+mustReplace(
+  `function isFlagged(t){
+  if(t.quoted_amount){ return (t.amount-t.quoted_amount)/t.quoted_amount > 0.15; }
+  const avg = txnAverage(t.category, t.project_id || t.resolved_project_id);
+  return avg ? Math.abs(t.amount-avg)/avg > 0.6 : false;
+}`,
+  `function isFlagged(t){
+  if(t.driver) return true;
+  if(t.quoted_amount){ return (t.amount-t.quoted_amount)/t.quoted_amount > 0.15; }
+  return false;
+}`);
+// the attribution mechanism is retired, so the read-only callout says what is
+// actually true of the ledger now
+mustReplace(
+  `<div class="callout info" style="margin-top:4px">\${iconInfo()}<div><b>Attribution is read-only.</b> Tagged rows carry a project code from SAP B1. The rest are matched here for analysis only — <b>inherited</b> (vendor + date), <b>suggested</b> (keyword), <b>unallocated</b> (site match alone). This workspace cannot write a code back; correcting one is a change a person makes in B1.</div></div>`,
+  `<div class="callout info" style="margin-top:4px">\${iconInfo()}<div><b>This ledger is read-only.</b> Every row carries a project code from SAP Business One. A <span style="color:var(--critical);font-weight:600">red row</span> has a stated reason — a named cost driver or a price above its firm quote — and clicking it opens the arithmetic and the B1 documents behind it. Correcting a posting is a change a person makes in B1.</div></div>`);
+
 /* ---- 2d. bridge tie-out + exact rounding -------------------------------- */
 // (1) largest-remainder allocation so the open commitment sums exactly
 //     (kills the S$1,079,999 artifact — forecast now reads S$1,080,000);
