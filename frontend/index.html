@@ -2379,15 +2379,15 @@ function renderDrilldown(){
         <thead><tr>
           <th class="${sortCls('id')}" data-sort-key="id">ID${sortArrow('id')}</th>
           <th class="${sortCls('date')}" data-sort-key="date">Date${sortArrow('date')}</th>
-          <th>Vendor</th><th>Description</th><th>Phase</th><th>Attribution</th>
+          <th>Vendor</th><th>Description</th><th>Phase</th><th>Source</th>
           <th class="${sortCls('amount')} ta-r" data-sort-key="amount">Amount${sortArrow('amount')}</th>
         </tr></thead>
         <tbody>
           ${rows.map(t=>{
             const flagged = isFlagged(t);
-            let badge = `<span class="tag-badge ${t.tag_status}">${t.tag_status}</span>`;
-            if(t.tag_status==='inherited') badge = `<span class="tag-badge inherited" title="${t.inherit_via||''}">inherited · ${t.confidence}%</span>`;
-            if(t.tag_status==='suggested') badge = `<span class="tag-badge suggested">suggested · ${t.confidence}%</span>`;
+            const badge = t.category==='labour'
+              ? `<span class="tag-badge" style="color:var(--cat-labour)" title="Computed from Time & Attendance clock records — hours × hourly rate, allocated to this project">Time & Att.</span>`
+              : `<span class="tag-badge" style="color:var(--brand)" title="Posted document in SAP Business One (PO / A/P invoice / subcontract)">SAP B1</span>`;
             return `<tr class="${flagged?'flagged':''} ${state.ddHighlightId===t.id?'trace-highlight':''} ${t.driver?'has-driver':''}" ${state.ddHighlightId===t.id?'id="ddHighlightRow"':''} ${t.driver?`data-driver="${t.id}"`:''}>
               <td>${t.id}</td><td>${t.date}</td><td>${t.vendor}</td>
               <td>${t.description}
@@ -2403,7 +2403,7 @@ function renderDrilldown(){
     </section>`;
 
   document.getElementById('ddBody').innerHTML = summary + driverBlock + crewBlock + vendorBlock + table + `
-    <div class="callout info" style="margin-top:4px">${iconInfo()}<div><b>This ledger is read-only.</b> Every row carries a project code from SAP Business One. A <span style="color:var(--critical);font-weight:600">red row</span> has a stated reason — a named cost driver or a price above its firm quote — and clicking it opens the arithmetic and the B1 documents behind it. Correcting a posting is a change a person makes in B1.</div></div>`;
+    <div class="callout info" style="margin-top:4px">${iconInfo()}<div><b>This ledger is read-only.</b> Cost documents come from <b>SAP Business One</b>; labour lines are computed from <b>Time &amp; Attendance</b> clock records (hours × rate) and allocated to the project. A <span style="color:var(--critical);font-weight:600">red row</span> has a stated reason — a named cost driver or a price above its firm quote — and clicking it opens the arithmetic and the B1 documents behind it. Correcting a posting is a change a person makes in B1.</div></div>`;
 
   const hlRow = document.getElementById('ddHighlightRow');
   if(hlRow) setTimeout(()=>hlRow.scrollIntoView({block:'center', behavior:'smooth'}), 80);

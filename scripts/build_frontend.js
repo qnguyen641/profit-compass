@@ -246,6 +246,22 @@ mustReplace(`
 mustReplace("<span class=\"ls-k\">${d.isFinal?'What this teaches the next quote':'Read'}</span>",
             "<span class=\"ls-k\">${d.isFinal?'Retrospective':'Read'}</span>");
 
+/* ---- 2g2. Attribution column becomes a SOURCE column -------------------- */
+// With auto-attribution retired every row read "tagged" — informationless.
+// The column now answers the real question: which system this record came
+// from. Labour lines are computed from Time & Attendance (hours × rate);
+// everything else is a posted SAP Business One document.
+mustReplace('<th>Vendor</th><th>Description</th><th>Phase</th><th>Attribution</th>',
+            '<th>Vendor</th><th>Description</th><th>Phase</th><th>Source</th>');
+mustReplace(
+  `            const flagged = isFlagged(t);
+            let badge = \`<span class="tag-badge \${t.tag_status}">\${t.tag_status}</span>\`;
+            if(t.tag_status==='inherited') badge = \`<span class="tag-badge inherited" title="\${t.inherit_via||''}">inherited · \${t.confidence}%</span>\`;
+            if(t.tag_status==='suggested') badge = \`<span class="tag-badge suggested">suggested · \${t.confidence}%</span>\`;`,
+  `            const flagged = isFlagged(t);
+            const badge = t.category==='labour'
+              ? \`<span class="tag-badge" style="color:var(--cat-labour)" title="Computed from Time & Attendance clock records — hours × hourly rate, allocated to this project">Time & Att.</span>\`
+              : \`<span class="tag-badge" style="color:var(--brand)" title="Posted document in SAP Business One (PO / A/P invoice / subcontract)">SAP B1</span>\`;`);
 /* ---- 2h. estimate vs firm quote: label the paper for what it was -------- */
 // quoted_amount is the historical committed figure; when the driver says it
 // was a budgetary estimate, calling it a "quote" contradicts the finding.
@@ -280,7 +296,7 @@ mustReplace(
 // actually true of the ledger now
 mustReplace(
   `<div class="callout info" style="margin-top:4px">\${iconInfo()}<div><b>Attribution is read-only.</b> Tagged rows carry a project code from SAP B1. The rest are matched here for analysis only — <b>inherited</b> (vendor + date), <b>suggested</b> (keyword), <b>unallocated</b> (site match alone). This workspace cannot write a code back; correcting one is a change a person makes in B1.</div></div>`,
-  `<div class="callout info" style="margin-top:4px">\${iconInfo()}<div><b>This ledger is read-only.</b> Every row carries a project code from SAP Business One. A <span style="color:var(--critical);font-weight:600">red row</span> has a stated reason — a named cost driver or a price above its firm quote — and clicking it opens the arithmetic and the B1 documents behind it. Correcting a posting is a change a person makes in B1.</div></div>`);
+  `<div class="callout info" style="margin-top:4px">\${iconInfo()}<div><b>This ledger is read-only.</b> Cost documents come from <b>SAP Business One</b>; labour lines are computed from <b>Time &amp; Attendance</b> clock records (hours × rate) and allocated to the project. A <span style="color:var(--critical);font-weight:600">red row</span> has a stated reason — a named cost driver or a price above its firm quote — and clicking it opens the arithmetic and the B1 documents behind it. Correcting a posting is a change a person makes in B1.</div></div>`);
 
 /* ---- 2d. bridge tie-out + exact rounding -------------------------------- */
 // (1) largest-remainder allocation so the open commitment sums exactly
