@@ -117,7 +117,8 @@ html = html.slice(0, scStart) + `function sendChat(){
 // mechanism are rewritten to match the data.
 function mustReplace(needle, replacement) {
   if (!html.includes(needle)) throw new Error('replace target not found: ' + needle.slice(0, 60));
-  html = html.replace(needle, replacement);
+  // function form: keeps $-sequences in the replacement text literal
+  html = html.replace(needle, () => replacement);
 }
 mustReplace(
   'detail:()=>`Healthy even after one unreferenced ${fmtSGD(12000)} freight charge that is still awaiting attribution — if that lands here, the saving narrows.`',
@@ -128,6 +129,51 @@ mustReplace(
 mustReplace(
   'detail:()=>`Permits, insurance and site cleaning all tracked to budget. Confirm the suggested attribution before treating the underspend as real.`',
   'detail:()=>`Permits, insurance and site cleaning all tracked to budget, with a small underspend on the allowance.`');
+
+/* ---- 2f. quote screen: the QUOTE is the main event ---------------------- */
+// Reorder the three columns: request form | GENERATED QUOTE (center, primary)
+// | evidence (right, supporting). Button becomes "Generate quote".
+{
+  const mStart = mustIndex(html, '      <div>\n        <section class="qsearch');
+  const rStart = mustIndex(html, '      <div class="card pad">\n        <div class="section-label">Suggested draft</div>');
+  const rEnd = mustIndex(html, '\n    </div>\n  `;\n}\n\n/* The search run.');
+  const middle = html.slice(mStart, rStart);
+  const right = html.slice(rStart, rEnd);
+  html = html.slice(0, mStart) + right + '\n\n' + middle.replace(/\s+$/, '\n') + html.slice(rEnd);
+}
+mustReplace(
+  "${iconCompass('currentColor')} ${done?'Search again':'Find comparable jobs'}",
+  "${iconCompass('currentColor')} ${done?'Regenerate quote':'Generate quote'}");
+mustReplace('<div class="section-label">Suggested draft</div>',
+            '<div class="section-label">Generated quote</div>');
+mustReplace('Matched <b>${QUOTE_REQUEST.reference_project_ids.length} of ${cands.length}</b> past jobs on project type and scope. Extracted overrun patterns are priced into the draft.',
+            'Matched <b>${QUOTE_REQUEST.reference_project_ids.length} of ${cands.length}</b> past jobs on project type and scope. Their overrun patterns are priced into the quote on the left.');
+
+/* ---- 2g. finished-job evidence drawer: facts only, no lecturing --------- */
+mustReplace(`
+        <p class="ad-p" style="margin-top:12px">\${PROJECT_LESSON[pid]||''}</p>`, '');
+mustReplace(`
+      <section class="ad-sec">
+        <div class="section-label">What it priced into this quote</div>
+        <div class="ad-rec">\${iconArrow()}<span>Subcontractor ran <b>+\${facts.subcontractor_overrun_pct}%</b> and installation overtime <b>+\${facts.labour_ot_overrun_pct}%</b> over budget here. Both are carried into the draft as contingency rather than assumed away.</span></div>
+      </section>
+`, '');
+// screen-B retrospective label loses the preachy framing too
+mustReplace("<span class=\"ls-k\">${d.isFinal?'What this teaches the next quote':'Read'}</span>",
+            "<span class=\"ls-k\">${d.isFinal?'Retrospective':'Read'}</span>");
+
+/* ---- 2h. estimate vs firm quote: label the paper for what it was -------- */
+// quoted_amount is the historical committed figure; when the driver says it
+// was a budgetary estimate, calling it a "quote" contradicts the finding.
+mustReplace(
+  '${flagged&&t.quoted_amount?` <span class="over-quote">quoted ${fmtSGD(t.quoted_amount)} · +${Math.round((t.amount-t.quoted_amount)/t.quoted_amount*100)}%</span>`:\'\'}',
+  '${flagged&&t.quoted_amount?` <span class="over-quote">${t.driver&&t.driver.cause===\'estimate_not_quote\'?\'estimated\':\'quoted\'} ${fmtSGD(t.quoted_amount)} · +${Math.round((t.amount-t.quoted_amount)/t.quoted_amount*100)}%</span>`:\'\'}');
+mustReplace(
+  '<span class="cause-meta">${ts.length} ${ts.length===1?\'line\':\'lines\'} · ${fmtSGD(total)}${overQ?` · ${fmtSGD(overQ)} above quote`:\'\'}</span>',
+  '<span class="cause-meta">${ts.length} ${ts.length===1?\'line\':\'lines\'} · ${fmtSGD(total)}${overQ?` · ${fmtSGD(overQ)} above ${cause===\'estimate_not_quote\'?\'estimate\':\'quote\'}`:\'\'}</span>');
+mustReplace(
+  "${overQuote ? `${fmtSGD(overQuote)} above the S${'$'}${t.quoted_amount.toLocaleString()} quoted` : 'posted amount'}",
+  "${overQuote ? `${fmtSGD(overQuote)} above the S${'$'}${t.quoted_amount.toLocaleString()} ${d.cause==='estimate_not_quote'?'budgetary estimate':'quoted'}` : 'posted amount'}");
 
 /* ---- 2e. red means a stated reason, never a statistical hunch ----------- */
 // The mock also flagged any row >60% away from the category average — a pure

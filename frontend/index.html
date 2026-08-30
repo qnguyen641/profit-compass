@@ -1758,7 +1758,7 @@ function renderDiagnosis(pid){
         </div>
         ${renderBridge(d.bridge, pid)}
         ${attention}
-        ${PROJECT_LESSON[pid] ? `<div class="lesson">${aiMark()}<div><span class="ls-k">${d.isFinal?'What this teaches the next quote':'Read'}</span>${PROJECT_LESSON[pid]}</div></div>` : ''}
+        ${PROJECT_LESSON[pid] ? `<div class="lesson">${aiMark()}<div><span class="ls-k">${d.isFinal?'Retrospective':'Read'}</span>${PROJECT_LESSON[pid]}</div></div>` : ''}
       </div>
     </section>`;
 }
@@ -1999,25 +1999,11 @@ function renderScreenD(){
           <input type="range" min="10" max="45" step="0.5" value="${quoteMarginPct}" id="marginSlider" style="width:100%;margin-top:10px;accent-color:var(--brand)"/>
           <div class="mi-scale"><span>10%</span><span>45%</span></div>
         </div>
-        <button class="btn primary" id="runSearchBtn" style="width:100%;justify-content:center">${iconCompass('currentColor')} ${done?'Search again':'Find comparable jobs'}</button>
-      </div>
-
-      <div>
-        <section class="qsearch${done?' revealed':''}" id="qsearch">
-          <div class="section-label" style="margin-bottom:10px">${aiMark()} Searching delivered jobs</div>
-          <ul class="scan-list" id="scanList">${scanRows}</ul>
-          <div class="scan-result" id="scanResult">
-            Matched <b>${QUOTE_REQUEST.reference_project_ids.length} of ${cands.length}</b> past jobs on project type and scope. Extracted overrun patterns are priced into the draft.
-          </div>
-        </section>
-        <div class="qresult">
-          <div class="section-label">Evidence — the jobs this price is built on</div>
-          <div class="ref-grid">${refCards}</div>
-        </div>
+        <button class="btn primary" id="runSearchBtn" style="width:100%;justify-content:center">${iconCompass('currentColor')} ${done?'Regenerate quote':'Generate quote'}</button>
       </div>
 
       <div class="card pad">
-        <div class="section-label">Suggested draft</div>
+        <div class="section-label">Generated quote</div>
         <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:10px">${suggestBars}</div>
         <div class="legend"><span><i style="color:var(--text-faint)"></i>Dashed mark = cost before contingency</span></div>
         <div class="section-label" style="margin-top:14px">Where the money goes</div>
@@ -2033,6 +2019,21 @@ function renderScreenD(){
         <button class="btn primary" style="width:100%;justify-content:center;margin-top:14px" id="approveQuoteBtn">Approve &amp; send to Sales</button>
         <div class="footer-note">Drafted from historical evidence. Review before sending.</div>
       </div>
+
+      <div>
+        <section class="qsearch${done?' revealed':''}" id="qsearch">
+          <div class="section-label" style="margin-bottom:10px">${aiMark()} Searching delivered jobs</div>
+          <ul class="scan-list" id="scanList">${scanRows}</ul>
+          <div class="scan-result" id="scanResult">
+            Matched <b>${QUOTE_REQUEST.reference_project_ids.length} of ${cands.length}</b> past jobs on project type and scope. Their overrun patterns are priced into the quote on the left.
+          </div>
+        </section>
+        <div class="qresult">
+          <div class="section-label">Evidence — the jobs this price is built on</div>
+          <div class="ref-grid">${refCards}</div>
+        </div>
+      </div>
+
     </div>
   `;
 }
@@ -2096,12 +2097,6 @@ function openEvidenceDrawer(pid){
           <span class="br-plot"><span class="br-axis"></span><span class="br-bar neg" style="width:${(Math.abs(s.impact)/span*50).toFixed(1)}%;background:var(--critical)"></span></span>
           <span class="br-val neg">−${fmtSGD(Math.abs(s.impact)).replace('−','')}</span>
         </div>`).join('')}
-        <p class="ad-p" style="margin-top:12px">${PROJECT_LESSON[pid]||''}</p>
-      </section>
-
-      <section class="ad-sec">
-        <div class="section-label">What it priced into this quote</div>
-        <div class="ad-rec">${iconArrow()}<span>Subcontractor ran <b>+${facts.subcontractor_overrun_pct}%</b> and installation overtime <b>+${facts.labour_ot_overrun_pct}%</b> over budget here. Both are carried into the draft as contingency rather than assumed away.</span></div>
       </section>
 
       <section class="ad-sec">
@@ -2274,7 +2269,7 @@ function renderDrilldown(){
           return `<div class="cause-group">
             <div class="cause-head">
               <span class="cause-name">${CAUSE_LABEL[cause]||cause}</span>
-              <span class="cause-meta">${ts.length} ${ts.length===1?'line':'lines'} · ${fmtSGD(total)}${overQ?` · ${fmtSGD(overQ)} above quote`:''}</span>
+              <span class="cause-meta">${ts.length} ${ts.length===1?'line':'lines'} · ${fmtSGD(total)}${overQ?` · ${fmtSGD(overQ)} above ${cause==='estimate_not_quote'?'estimate':'quote'}`:''}</span>
             </div>
             ${ts.map(t=>`<button class="cause-row" data-driver="${t.id}">
               <span class="cr-id">${t.id}</span>
@@ -2389,7 +2384,7 @@ function renderDrilldown(){
               <td>${t.id}</td><td>${t.date}</td><td>${t.vendor}</td>
               <td>${t.description}
                 ${t.driver?`<span class="cause-chip">${CAUSE_LABEL[t.driver.cause]||t.driver.cause}${t.driver.incident?` · ${t.driver.incident}`:''} ${iconChevron()}</span>`:''}
-                ${flagged&&t.quoted_amount?` <span class="over-quote">quoted ${fmtSGD(t.quoted_amount)} · +${Math.round((t.amount-t.quoted_amount)/t.quoted_amount*100)}%</span>`:''}</td>
+                ${flagged&&t.quoted_amount?` <span class="over-quote">${t.driver&&t.driver.cause==='estimate_not_quote'?'estimated':'quoted'} ${fmtSGD(t.quoted_amount)} · +${Math.round((t.amount-t.quoted_amount)/t.quoted_amount*100)}%</span>`:''}</td>
               <td class="cap">${t.phase}</td>
               <td>${badge}</td>
               <td class="ta-r num">${fmtSGD(t.amount)}</td>
@@ -2442,7 +2437,7 @@ function openDriverDrawer(txnId){
 
       <div class="ad-impact ${overQuote?'neg':''}">
         <span class="adi-v num">${fmtSGD(t.amount)}</span>
-        <span class="adi-k">${overQuote ? `${fmtSGD(overQuote)} above the S${'$'}${t.quoted_amount.toLocaleString()} quoted` : 'posted amount'}</span>
+        <span class="adi-k">${overQuote ? `${fmtSGD(overQuote)} above the S${'$'}${t.quoted_amount.toLocaleString()} ${d.cause==='estimate_not_quote'?'budgetary estimate':'quoted'}` : 'posted amount'}</span>
       </div>
 
       ${overQuote ? `<section class="ad-sec">
