@@ -1,0 +1,10 @@
+services:
+  profit-compass:
+    build: .
+    container_name: profit-compass
+    restart: unless-stopped
+    ports:
+      - "${PC_PORT:-8018}:8000"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - ANTHROPIC_MODEL=${ANTHROPIC_MODEL:-claude-sonnet-4-5}

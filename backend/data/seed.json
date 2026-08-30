@@ -1,0 +1,2011 @@
+{
+ "PROJECTS": [
+  {
+   "id": "PRJ-001",
+   "name": "Orchard Road Christmas 2026",
+   "customer": "Orchard Road Business Association",
+   "type": "festive_installation",
+   "status": "in_progress",
+   "completion_pct": 71,
+   "contract_value": 1500000,
+   "lifecycle_stage": "installation"
+  },
+  {
+   "id": "PRJ-002",
+   "name": "Orchard Road Christmas 2025",
+   "customer": "Orchard Road Business Association",
+   "type": "festive_installation",
+   "status": "completed",
+   "completion_pct": 100,
+   "contract_value": 1350000,
+   "lifecycle_stage": "dismantling"
+  },
+  {
+   "id": "PRJ-003",
+   "name": "Gardens by the Bay Festive 2025",
+   "customer": "Gardens by the Bay",
+   "type": "festive_installation",
+   "status": "completed",
+   "completion_pct": 100,
+   "contract_value": 980000,
+   "lifecycle_stage": "dismantling"
+  },
+  {
+   "id": "PRJ-004",
+   "name": "Mall Activation Q2 2026",
+   "customer": "(Retail Group, generic)",
+   "type": "mall_activation",
+   "status": "in_progress",
+   "completion_pct": 45,
+   "contract_value": 420000,
+   "lifecycle_stage": "fabrication"
+  },
+  {
+   "id": "PRJ-005",
+   "name": "Gardens by the Bay CNY 2027",
+   "customer": "Gardens by the Bay",
+   "type": "festive_installation",
+   "status": "quoting",
+   "completion_pct": null,
+   "contract_value": null,
+   "lifecycle_stage": null
+  }
+ ],
+ "SNAPSHOTS": {
+  "PRJ-001": {
+   "revenue": 1500000,
+   "actual_cost": 1060000,
+   "profit": 440000,
+   "margin_pct": 29.3,
+   "forecast_final_cost": 1143000,
+   "forecast_final_profit": 357000,
+   "forecast_final_margin_pct": 23.8,
+   "budget_margin_pct": 30
+  },
+  "PRJ-002": {
+   "revenue": 1350000,
+   "actual_cost": 1026000,
+   "profit": 324000,
+   "margin_pct": 24,
+   "final": true,
+   "budget_margin_pct": 30
+  },
+  "PRJ-003": {
+   "revenue": 980000,
+   "actual_cost": 725200,
+   "profit": 254800,
+   "margin_pct": 26,
+   "final": true,
+   "budget_margin_pct": 31
+  },
+  "PRJ-004": {
+   "revenue": 420000,
+   "actual_cost": 287700,
+   "profit": 132300,
+   "margin_pct": 31.5,
+   "forecast_final_margin_pct": 30.8,
+   "budget_margin_pct": 32
+  }
+ },
+ "LIFECYCLE_STAGES": [
+  "design",
+  "procurement",
+  "fabrication",
+  "installation",
+  "event",
+  "dismantling"
+ ],
+ "BUDGET_BY_CATEGORY": {
+  "material": 300000,
+  "labour": 250000,
+  "subcontractor": 180000,
+  "logistics": 100000,
+  "other": 70000
+ },
+ "ACTUAL_BY_CATEGORY": {
+  "material": 360000,
+  "labour": 265000,
+  "subcontractor": 210000,
+  "logistics": 95000,
+  "other": 65000
+ },
+ "OPEN_PO_TOTAL": 85000,
+ "CATS": [
+  "material",
+  "labour",
+  "subcontractor",
+  "logistics",
+  "other"
+ ],
+ "CATEGORY_DATA": {
+  "PRJ-001": {
+   "budget": {
+    "material": 300000,
+    "labour": 250000,
+    "subcontractor": 180000,
+    "logistics": 100000,
+    "other": 70000
+   },
+   "actual": {
+    "material": 360000,
+    "labour": 265000,
+    "subcontractor": 210000,
+    "logistics": 95000,
+    "other": 65000
+   }
+  },
+  "PRJ-002": {
+   "budget": {
+    "material": 292000,
+    "labour": 235000,
+    "subcontractor": 170000,
+    "logistics": 106000,
+    "other": 79000
+   },
+   "actual": {
+    "material": 305000,
+    "labour": 277000,
+    "subcontractor": 202000,
+    "logistics": 105000,
+    "other": 74000
+   }
+  },
+  "PRJ-003": {
+   "budget": {
+    "material": 204000,
+    "labour": 175000,
+    "subcontractor": 118500,
+    "logistics": 79000,
+    "other": 55500
+   },
+   "actual": {
+    "material": 208000,
+    "labour": 214000,
+    "subcontractor": 128000,
+    "logistics": 76000,
+    "other": 54000
+   }
+  },
+  "PRJ-004": {
+   "budget": {
+    "material": 104000,
+    "labour": 86000,
+    "subcontractor": 42000,
+    "logistics": 24000,
+    "other": 16000
+   },
+   "actual": {
+    "material": 112000,
+    "labour": 82000,
+    "subcontractor": 38000,
+    "logistics": 22000,
+    "other": 14000
+   }
+  }
+ },
+ "DRIVER_NOTES": {
+  "PRJ-002": {
+   "labour": "Installation overtime ran 18% over — the same failure mode as the 2026 job.",
+   "subcontractor": "Rigging was committed on a rough estimate rather than a firm quote, and came back 19% higher.",
+   "material": "Broadly to plan; the small overrun is late-stage replacement stock.",
+   "logistics": "Held to budget under a single haulage contract.",
+   "other": "Permits and insurance came in under the allowance."
+  },
+  "PRJ-003": {
+   "labour": "A compressed install window was absorbed entirely in overtime — 22% over budget.",
+   "subcontractor": "Quoted firm up front, so the overrun stayed in single digits.",
+   "material": "Essentially on plan.",
+   "logistics": "Slightly under; the site allowed direct delivery with no interim storage.",
+   "other": "Under the allowance."
+  },
+  "PRJ-004": {
+   "material": "Fabrication buys its materials up front, so this category leads the spend curve at 45% delivered.",
+   "labour": "Crew is on plan; installation hours have not started.",
+   "subcontractor": "Committed under quote.",
+   "logistics": "Under budget — a single-site job with no haulage between venues.",
+   "other": "Under the allowance."
+  }
+ },
+ "PROJECT_LESSON": {
+  "PRJ-002": "Two of the three overruns here repeat on the 2026 job. Treat installation overtime and unquoted subcontract as a pattern for this project type, not bad luck.",
+  "PRJ-003": "Margin held five points better than Orchard Road because the subcontract was quoted firm. Labour was the entire gap.",
+  "PRJ-004": "Nothing is off plan. The spend curve is front-loaded by design — the test comes when installation labour lands."
+ },
+ "TRANSACTIONS": [
+  {
+   "id": "PO-2381",
+   "project_id": "PRJ-001",
+   "date": "2026-06-14",
+   "category": "material",
+   "vendor": "Heng Long Timber Supplies",
+   "description": "Timber — structural framing",
+   "amount": 46800,
+   "quoted_amount": 34900,
+   "phase": "fabrication",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "price_increase",
+    "note": "Quoted S$34,900 on 2026-04-02 and ordered 10 weeks later without re-confirming. The supplier repriced against the hardwood index in between; the A/P invoice matched the new price, so nothing flagged in B1 at posting.",
+    "docs": [
+     {
+      "type": "Purchase Order",
+      "ref": "PO-2381",
+      "note": "ordered 2026-06-14"
+     },
+     {
+      "type": "A/P Invoice",
+      "ref": "API-7712",
+      "note": "S$46,800 — 34% above quote"
+     },
+     {
+      "type": "Business Partner",
+      "ref": "V-HLT-004",
+      "note": "Heng Long Timber Supplies · price list revised 2026-05-19"
+     }
+    ]
+   }
+  },
+  {
+   "id": "PO-2205",
+   "project_id": "PRJ-001",
+   "date": "2026-05-02",
+   "category": "material",
+   "vendor": "BrightLite Displays",
+   "description": "LED module supply",
+   "amount": 58200,
+   "phase": "fabrication",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "late_delivery",
+    "incident": "INC-001",
+    "note": "Priced as ordered. The cost is downstream: 8 days late into a fixed installation window."
+   }
+  },
+  {
+   "id": "PO-2214",
+   "project_id": "PRJ-001",
+   "date": "2026-05-06",
+   "category": "material",
+   "vendor": "Nova Fabric Co.",
+   "description": "Backdrop fabric & banners",
+   "amount": 41500,
+   "phase": "fabrication",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "rework",
+    "incident": "INC-003",
+    "note": "Replacement batch after a colour-fast failure. The material was credited in full — the loss is 140 hours of re-making."
+   }
+  },
+  {
+   "id": "PO-2260",
+   "project_id": "PRJ-001",
+   "date": "2026-04-18",
+   "category": "material",
+   "vendor": "Heng Long Timber Supplies",
+   "description": "Plywood sheeting",
+   "amount": 33900,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "PO-2299",
+   "project_id": "PRJ-001",
+   "date": "2026-04-25",
+   "category": "material",
+   "vendor": "SinCo Hardware",
+   "description": "Fixings & hardware",
+   "amount": 19600,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "PO-2310",
+   "project_id": "PRJ-001",
+   "date": "2026-06-01",
+   "category": "material",
+   "vendor": "Prism Paint & Coatings",
+   "description": "Finishing paint",
+   "amount": 22400,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "AP-8834",
+   "project_id": null,
+   "date": "2026-06-20",
+   "category": "material",
+   "vendor": "GlowTech Lighting Pte Ltd",
+   "description": "LED strip replenishment (no project code on invoice)",
+   "amount": 28300,
+   "phase": "installation",
+   "tag_status": "inherited",
+   "confidence": 92,
+   "resolved_project_id": "PRJ-001",
+   "inherit_via": "Vendor + delivery-date match to Orchard Road site address",
+   "driver": {
+    "cause": "expedite",
+    "incident": "INC-001",
+    "note": "Expedited replenishment ordered to keep the arch lighting on programme after the late delivery. Carries a freight premium."
+   }
+  },
+  {
+   "id": "PO-2455",
+   "project_id": "PRJ-001",
+   "date": "2026-07-02",
+   "category": "material",
+   "vendor": "Nova Fabric Co.",
+   "description": "Final backdrop, signage & touch-up materials",
+   "amount": 109300,
+   "phase": "installation",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "scope_change",
+    "incident": "INC-002",
+    "note": "Raised against an amended sales order that added 3 arch spans. The contract value was never amended to match, so the whole line lands on cost."
+   }
+  },
+  {
+   "id": "TS-DESIGN-01",
+   "project_id": "PRJ-001",
+   "date": "2026-02-10",
+   "category": "labour",
+   "vendor": "Design Studio (internal)",
+   "description": "Design studio hours",
+   "amount": 15300,
+   "phase": "design",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS-PROC-01",
+   "project_id": "PRJ-001",
+   "date": "2026-04-05",
+   "category": "labour",
+   "vendor": "Site Survey Team (internal)",
+   "description": "Procurement / site-survey labour",
+   "amount": 18400,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS-FAB-01",
+   "project_id": "PRJ-001",
+   "date": "2026-05-10",
+   "category": "labour",
+   "vendor": "Fabrication Crew (internal)",
+   "description": "Fabrication crew payroll",
+   "amount": 52300,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS-FAB-02",
+   "project_id": "PRJ-001",
+   "date": "2026-05-24",
+   "category": "labour",
+   "vendor": "Fabrication Crew (internal)",
+   "description": "Fabrication crew payroll",
+   "amount": 46900,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS-INST-01",
+   "project_id": "PRJ-001",
+   "date": "2026-06-15",
+   "category": "labour",
+   "vendor": "Installation Crew (internal)",
+   "description": "Installation crew payroll (incl. overtime)",
+   "amount": 41200,
+   "phase": "installation",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "late_delivery",
+    "incident": "INC-001",
+    "note": "Carries 210 of the 420 installation overtime hours — the crew absorbing the LED delivery slip."
+   }
+  },
+  {
+   "id": "TS-INST-02",
+   "project_id": "PRJ-001",
+   "date": "2026-06-22",
+   "category": "labour",
+   "vendor": "Installation Crew (internal)",
+   "description": "Installation crew payroll (incl. overtime)",
+   "amount": 38600,
+   "phase": "installation",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "scope_change",
+    "incident": "INC-002",
+    "note": "Carries 120 installation overtime hours against the 3 added arch spans."
+   }
+  },
+  {
+   "id": "TS-EVENT-01",
+   "project_id": "PRJ-001",
+   "date": "2026-07-05",
+   "category": "labour",
+   "vendor": "Event-Day Crew (internal)",
+   "description": "Event-day crew & standby",
+   "amount": 33700,
+   "phase": "event",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS-DISM-01",
+   "project_id": "PRJ-001",
+   "date": "2026-07-20",
+   "category": "labour",
+   "vendor": "Dismantling Crew (internal)",
+   "description": "Dismantling crew (to date)",
+   "amount": 18600,
+   "phase": "dismantling",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "SC-405",
+   "project_id": "PRJ-001",
+   "date": "2026-05-12",
+   "category": "subcontractor",
+   "vendor": "Stellar Rigging & Structures",
+   "description": "Scaffolding & access subcontract",
+   "amount": 38200,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "SC-410",
+   "project_id": "PRJ-001",
+   "date": "2026-06-10",
+   "category": "subcontractor",
+   "vendor": "Stellar Rigging & Structures",
+   "description": "Rigging & structural install subcontract",
+   "amount": 92500,
+   "quoted_amount": 77800,
+   "phase": "installation",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "estimate_not_quote",
+    "note": "Committed against a budgetary estimate of S$77,800 rather than a firm quote — the same vendor, the same failure, on the 2025 job. Final claim 18.9% higher with no scope change on file.",
+    "docs": [
+     {
+      "type": "Purchase Order",
+      "ref": "SC-410",
+      "note": "raised against estimate"
+     },
+     {
+      "type": "A/P Invoice",
+      "ref": "API-7801",
+      "note": "S$92,500 final claim"
+     }
+    ]
+   }
+  },
+  {
+   "id": "SC-412",
+   "project_id": "PRJ-001",
+   "date": "2026-07-04",
+   "category": "subcontractor",
+   "vendor": "Apex Audio-Visual Pte Ltd",
+   "description": "AV & sound subcontract",
+   "amount": 61300,
+   "phase": "event",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "SC-430",
+   "project_id": "PRJ-001",
+   "date": "2026-07-06",
+   "category": "subcontractor",
+   "vendor": "Apex Audio-Visual Pte Ltd",
+   "description": "Additional AV rental",
+   "amount": 18000,
+   "phase": "event",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "LOG-715",
+   "project_id": "PRJ-001",
+   "date": "2026-04-28",
+   "category": "logistics",
+   "vendor": "SwiftHaul Logistics",
+   "description": "Storage & warehousing",
+   "amount": 15000,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "LOG-701",
+   "project_id": "PRJ-001",
+   "date": "2026-06-16",
+   "category": "logistics",
+   "vendor": "SwiftHaul Logistics",
+   "description": "Site delivery & haulage",
+   "amount": 38400,
+   "phase": "installation",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "LOG-705",
+   "project_id": "PRJ-001",
+   "date": "2026-06-18",
+   "category": "logistics",
+   "vendor": "SwiftHaul Logistics",
+   "description": "Crane & heavy-lift charges",
+   "amount": 29600,
+   "phase": "installation",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "LOG-710",
+   "project_id": null,
+   "date": "2026-06-19",
+   "category": "logistics",
+   "vendor": "(no vendor reference)",
+   "description": "Freight charge — no cost centre or vendor reference on the document",
+   "amount": 12000,
+   "phase": "installation",
+   "tag_status": "unallocated",
+   "resolved_project_id": "PRJ-001",
+   "driver": {
+    "cause": "no_reference",
+    "note": "Counted against this project on a delivery-address match alone. Nothing on the document names the job. If it belongs elsewhere, logistics improves by 12.6%."
+   }
+  },
+  {
+   "id": "OTH-910",
+   "project_id": "PRJ-001",
+   "date": "2026-03-01",
+   "category": "other",
+   "vendor": "InsureAll Brokers",
+   "description": "Project insurance",
+   "amount": 18200,
+   "phase": "design",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "OTH-901",
+   "project_id": "PRJ-001",
+   "date": "2026-04-20",
+   "category": "other",
+   "vendor": "Site Safety & Permits Co.",
+   "description": "Permits & safety compliance",
+   "amount": 21500,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "OTH-905",
+   "project_id": "PRJ-001",
+   "date": "2026-07-18",
+   "category": "other",
+   "vendor": "CleanSweep Site Services",
+   "description": "Site cleaning & waste management",
+   "amount": 16800,
+   "phase": "dismantling",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "OTH-915",
+   "project_id": null,
+   "date": "2026-06-24",
+   "category": "other",
+   "vendor": "(cost-centre keyword match only)",
+   "description": "Site sundries — matched by cost-centre keyword, not vendor",
+   "amount": 8500,
+   "phase": "installation",
+   "tag_status": "suggested",
+   "confidence": 78,
+   "resolved_project_id": "PRJ-001",
+   "driver": {
+    "cause": "site_match_only",
+    "note": "Matched on a cost-centre keyword, not a vendor or project code. Counted here, but the attribution is inferred — fix the code in SAP B1 to make it certain."
+   }
+  },
+  {
+   "id": "PO-1902",
+   "project_id": "PRJ-002",
+   "date": "2025-04-08",
+   "category": "material",
+   "vendor": "Heng Long Timber Supplies",
+   "description": "Timber — structural framing",
+   "amount": 62000,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "PO-1915",
+   "project_id": "PRJ-002",
+   "date": "2025-04-22",
+   "category": "material",
+   "vendor": "BrightLite Displays",
+   "description": "LED module supply",
+   "amount": 88500,
+   "phase": "fabrication",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "late_delivery",
+    "incident": "INC-101",
+    "note": "Delivered 11 days after the order due date. The goods cost what they should; the delay is what cost money."
+   }
+  },
+  {
+   "id": "PO-1930",
+   "project_id": "PRJ-002",
+   "date": "2025-05-06",
+   "category": "material",
+   "vendor": "Nova Fabric Co.",
+   "description": "Backdrop fabric & banners",
+   "amount": 44200,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "PO-1948",
+   "project_id": "PRJ-002",
+   "date": "2025-04-30",
+   "category": "material",
+   "vendor": "SinCo Hardware",
+   "description": "Fixings & hardware",
+   "amount": 21300,
+   "phase": "procurement",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "rework",
+    "incident": "INC-103",
+    "note": "First batch returned out of spec and credited; this is the replacement order."
+   }
+  },
+  {
+   "id": "PO-1960",
+   "project_id": "PRJ-002",
+   "date": "2025-05-18",
+   "category": "material",
+   "vendor": "Prism Paint & Coatings",
+   "description": "Finishing paint",
+   "amount": 26000,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "PO-1975",
+   "project_id": "PRJ-002",
+   "date": "2025-06-14",
+   "category": "material",
+   "vendor": "GlowTech Lighting Pte Ltd",
+   "description": "LED strip — expedited replacement stock",
+   "amount": 63000,
+   "phase": "installation",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "expedite",
+    "incident": "INC-101",
+    "note": "Air-freighted to recover the 11-day delivery slip. Freight premium is inside this line."
+   }
+  },
+  {
+   "id": "TS2-D-01",
+   "project_id": "PRJ-002",
+   "date": "2025-02-14",
+   "category": "labour",
+   "vendor": "Design Studio (internal)",
+   "description": "Design studio hours",
+   "amount": 16800,
+   "phase": "design",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS2-P-01",
+   "project_id": "PRJ-002",
+   "date": "2025-04-04",
+   "category": "labour",
+   "vendor": "Site Survey Team (internal)",
+   "description": "Procurement / site-survey labour",
+   "amount": 19400,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS2-F-01",
+   "project_id": "PRJ-002",
+   "date": "2025-05-09",
+   "category": "labour",
+   "vendor": "Fabrication Crew (internal)",
+   "description": "Fabrication crew payroll",
+   "amount": 58200,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS2-F-02",
+   "project_id": "PRJ-002",
+   "date": "2025-05-23",
+   "category": "labour",
+   "vendor": "Fabrication Crew (internal)",
+   "description": "Fabrication crew payroll (incl. rework overtime)",
+   "amount": 51400,
+   "phase": "fabrication",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "rework",
+    "incident": "INC-103",
+    "note": "Carries the 100 fabrication overtime hours spent re-drilling after the fixing return."
+   }
+  },
+  {
+   "id": "TS2-I-01",
+   "project_id": "PRJ-002",
+   "date": "2025-06-13",
+   "category": "labour",
+   "vendor": "Installation Crew (internal)",
+   "description": "Installation crew payroll (incl. overtime)",
+   "amount": 52300,
+   "phase": "installation",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "late_delivery",
+    "incident": "INC-101",
+    "note": "260 overtime hours absorbed the late LED delivery without moving the opening date."
+   }
+  },
+  {
+   "id": "TS2-I-02",
+   "project_id": "PRJ-002",
+   "date": "2025-06-27",
+   "category": "labour",
+   "vendor": "Installation Crew (internal)",
+   "description": "Installation crew payroll (incl. overtime)",
+   "amount": 44900,
+   "phase": "installation",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "scope_change",
+    "incident": "INC-102",
+    "note": "Extended canopy run, amended after fabrication had started."
+   }
+  },
+  {
+   "id": "TS2-E-01",
+   "project_id": "PRJ-002",
+   "date": "2025-07-08",
+   "category": "labour",
+   "vendor": "Event-Day Crew (internal)",
+   "description": "Event-day crew & standby",
+   "amount": 21600,
+   "phase": "event",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS2-X-01",
+   "project_id": "PRJ-002",
+   "date": "2025-08-02",
+   "category": "labour",
+   "vendor": "Dismantling Crew (internal)",
+   "description": "Dismantling crew",
+   "amount": 12400,
+   "phase": "dismantling",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "SC2-301",
+   "project_id": "PRJ-002",
+   "date": "2025-05-11",
+   "category": "subcontractor",
+   "vendor": "Stellar Rigging & Structures",
+   "description": "Scaffolding & access subcontract",
+   "amount": 41500,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "SC2-310",
+   "project_id": "PRJ-002",
+   "date": "2025-06-09",
+   "category": "subcontractor",
+   "vendor": "Stellar Rigging & Structures",
+   "description": "Rigging & structural install subcontract",
+   "amount": 96800,
+   "quoted_amount": 79000,
+   "phase": "installation",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "estimate_not_quote",
+    "note": "Committed against a budgetary estimate of S$79,000, not a firm quote. Final claim came in 22.5% higher with no change to scope on file."
+   }
+  },
+  {
+   "id": "SC2-322",
+   "project_id": "PRJ-002",
+   "date": "2025-07-05",
+   "category": "subcontractor",
+   "vendor": "Apex Audio-Visual Pte Ltd",
+   "description": "AV & sound subcontract",
+   "amount": 47200,
+   "phase": "event",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "SC2-330",
+   "project_id": "PRJ-002",
+   "date": "2025-07-09",
+   "category": "subcontractor",
+   "vendor": "Apex Audio-Visual Pte Ltd",
+   "description": "Additional AV rental",
+   "amount": 16500,
+   "phase": "event",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "LOG2-601",
+   "project_id": "PRJ-002",
+   "date": "2025-04-26",
+   "category": "logistics",
+   "vendor": "SwiftHaul Logistics",
+   "description": "Storage & warehousing",
+   "amount": 17500,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "LOG2-612",
+   "project_id": "PRJ-002",
+   "date": "2025-06-15",
+   "category": "logistics",
+   "vendor": "SwiftHaul Logistics",
+   "description": "Site delivery & haulage",
+   "amount": 42000,
+   "phase": "installation",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "LOG2-620",
+   "project_id": "PRJ-002",
+   "date": "2025-06-17",
+   "category": "logistics",
+   "vendor": "SwiftHaul Logistics",
+   "description": "Crane & heavy-lift charges",
+   "amount": 33500,
+   "phase": "installation",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "LOG2-634",
+   "project_id": "PRJ-002",
+   "date": "2025-08-03",
+   "category": "logistics",
+   "vendor": "SwiftHaul Logistics",
+   "description": "Dismantling haulage",
+   "amount": 12000,
+   "phase": "dismantling",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "OTH2-801",
+   "project_id": "PRJ-002",
+   "date": "2025-03-03",
+   "category": "other",
+   "vendor": "InsureAll Brokers",
+   "description": "Project insurance",
+   "amount": 19600,
+   "phase": "design",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "OTH2-810",
+   "project_id": "PRJ-002",
+   "date": "2025-04-18",
+   "category": "other",
+   "vendor": "Site Safety & Permits Co.",
+   "description": "Permits & safety compliance",
+   "amount": 24800,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "OTH2-820",
+   "project_id": "PRJ-002",
+   "date": "2025-08-06",
+   "category": "other",
+   "vendor": "CleanSweep Site Services",
+   "description": "Site cleaning & waste management",
+   "amount": 18200,
+   "phase": "dismantling",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "OTH2-835",
+   "project_id": "PRJ-002",
+   "date": "2025-06-05",
+   "category": "other",
+   "vendor": "Singapore Land Transport Authority",
+   "description": "Road closure permit",
+   "amount": 11400,
+   "phase": "installation",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "PO-1502",
+   "project_id": "PRJ-003",
+   "date": "2025-10-06",
+   "category": "material",
+   "vendor": "Heng Long Timber Supplies",
+   "description": "Timber — structural framing",
+   "amount": 44600,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "PO-1514",
+   "project_id": "PRJ-003",
+   "date": "2025-10-20",
+   "category": "material",
+   "vendor": "BrightLite Displays",
+   "description": "LED module supply",
+   "amount": 61200,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "PO-1526",
+   "project_id": "PRJ-003",
+   "date": "2025-11-04",
+   "category": "material",
+   "vendor": "Nova Fabric Co.",
+   "description": "Backdrop fabric & banners",
+   "amount": 38400,
+   "phase": "fabrication",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "late_delivery",
+    "incident": "INC-202",
+    "note": "Received 7 days late into an already-compressed window."
+   }
+  },
+  {
+   "id": "PO-1538",
+   "project_id": "PRJ-003",
+   "date": "2025-10-14",
+   "category": "material",
+   "vendor": "SinCo Hardware",
+   "description": "Fixings & hardware",
+   "amount": 16800,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "PO-1550",
+   "project_id": "PRJ-003",
+   "date": "2025-11-01",
+   "category": "material",
+   "vendor": "Prism Paint & Coatings",
+   "description": "Finishing paint",
+   "amount": 19000,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "PO-1562",
+   "project_id": "PRJ-003",
+   "date": "2025-11-25",
+   "category": "material",
+   "vendor": "GlowTech Lighting Pte Ltd",
+   "description": "LED strip — expedited",
+   "amount": 28000,
+   "phase": "installation",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "expedite",
+    "incident": "INC-202",
+    "note": "Expedited to hold the brought-forward opening date."
+   }
+  },
+  {
+   "id": "TS3-D-01",
+   "project_id": "PRJ-003",
+   "date": "2025-09-08",
+   "category": "labour",
+   "vendor": "Design Studio (internal)",
+   "description": "Design studio hours",
+   "amount": 13200,
+   "phase": "design",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS3-P-01",
+   "project_id": "PRJ-003",
+   "date": "2025-10-03",
+   "category": "labour",
+   "vendor": "Site Survey Team (internal)",
+   "description": "Procurement / site-survey labour",
+   "amount": 14600,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS3-F-01",
+   "project_id": "PRJ-003",
+   "date": "2025-10-24",
+   "category": "labour",
+   "vendor": "Fabrication Crew (internal)",
+   "description": "Fabrication crew payroll",
+   "amount": 44800,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS3-F-02",
+   "project_id": "PRJ-003",
+   "date": "2025-11-07",
+   "category": "labour",
+   "vendor": "Fabrication Crew (internal)",
+   "description": "Fabrication crew payroll (incl. overtime)",
+   "amount": 39600,
+   "phase": "fabrication",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "scope_change",
+    "incident": "INC-201",
+    "note": "Programme compressed by six days; fabrication absorbed 70 overtime hours."
+   }
+  },
+  {
+   "id": "TS3-I-01",
+   "project_id": "PRJ-003",
+   "date": "2025-11-28",
+   "category": "labour",
+   "vendor": "Installation Crew (internal)",
+   "description": "Installation crew payroll (incl. overtime)",
+   "amount": 46200,
+   "phase": "installation",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "scope_change",
+    "incident": "INC-201",
+    "note": "The single largest carrier of the 22% labour overrun — 170 installation overtime hours."
+   }
+  },
+  {
+   "id": "TS3-I-02",
+   "project_id": "PRJ-003",
+   "date": "2025-12-05",
+   "category": "labour",
+   "vendor": "Installation Crew (internal)",
+   "description": "Installation crew payroll (incl. night-shift overtime)",
+   "amount": 33900,
+   "phase": "installation",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "site_restriction",
+    "incident": "INC-203",
+    "note": "Venue access restricted to 22:00–06:00 — a standing condition, budgeted as normal hours."
+   }
+  },
+  {
+   "id": "TS3-E-01",
+   "project_id": "PRJ-003",
+   "date": "2025-12-18",
+   "category": "labour",
+   "vendor": "Event-Day Crew (internal)",
+   "description": "Event-day crew & standby",
+   "amount": 13100,
+   "phase": "event",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "TS3-X-01",
+   "project_id": "PRJ-003",
+   "date": "2026-01-14",
+   "category": "labour",
+   "vendor": "Dismantling Crew (internal)",
+   "description": "Dismantling crew",
+   "amount": 8600,
+   "phase": "dismantling",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "SC3-201",
+   "project_id": "PRJ-003",
+   "date": "2025-10-28",
+   "category": "subcontractor",
+   "vendor": "Stellar Rigging & Structures",
+   "description": "Scaffolding & access subcontract",
+   "amount": 28400,
+   "phase": "fabrication",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "SC3-212",
+   "project_id": "PRJ-003",
+   "date": "2025-11-26",
+   "category": "subcontractor",
+   "vendor": "Stellar Rigging & Structures",
+   "description": "Rigging & structural install subcontract",
+   "amount": 58600,
+   "quoted_amount": 54300,
+   "phase": "installation",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "price_increase",
+    "note": "Quoted firm at S$54,300 and held to within 8% — the discipline that kept this job five points ahead of Orchard Road."
+   }
+  },
+  {
+   "id": "SC3-224",
+   "project_id": "PRJ-003",
+   "date": "2025-12-16",
+   "category": "subcontractor",
+   "vendor": "Apex Audio-Visual Pte Ltd",
+   "description": "AV & sound subcontract",
+   "amount": 41000,
+   "phase": "event",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "LOG3-501",
+   "project_id": "PRJ-003",
+   "date": "2025-10-18",
+   "category": "logistics",
+   "vendor": "SwiftHaul Logistics",
+   "description": "Storage & warehousing",
+   "amount": 11200,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "LOG3-512",
+   "project_id": "PRJ-003",
+   "date": "2025-11-27",
+   "category": "logistics",
+   "vendor": "SwiftHaul Logistics",
+   "description": "Site delivery & haulage",
+   "amount": 31800,
+   "phase": "installation",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "LOG3-520",
+   "project_id": "PRJ-003",
+   "date": "2025-11-29",
+   "category": "logistics",
+   "vendor": "SwiftHaul Logistics",
+   "description": "Crane & heavy-lift charges",
+   "amount": 24000,
+   "phase": "installation",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "LOG3-530",
+   "project_id": "PRJ-003",
+   "date": "2026-01-15",
+   "category": "logistics",
+   "vendor": "SwiftHaul Logistics",
+   "description": "Dismantling haulage",
+   "amount": 9000,
+   "phase": "dismantling",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "OTH3-701",
+   "project_id": "PRJ-003",
+   "date": "2025-09-12",
+   "category": "other",
+   "vendor": "InsureAll Brokers",
+   "description": "Project insurance",
+   "amount": 14300,
+   "phase": "design",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "OTH3-712",
+   "project_id": "PRJ-003",
+   "date": "2025-10-09",
+   "category": "other",
+   "vendor": "Site Safety & Permits Co.",
+   "description": "Permits & safety compliance",
+   "amount": 18900,
+   "phase": "procurement",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "OTH3-724",
+   "project_id": "PRJ-003",
+   "date": "2026-01-16",
+   "category": "other",
+   "vendor": "CleanSweep Site Services",
+   "description": "Site cleaning & waste management",
+   "amount": 12600,
+   "phase": "dismantling",
+   "tag_status": "tagged"
+  },
+  {
+   "id": "OTH3-736",
+   "project_id": "PRJ-003",
+   "date": "2025-11-30",
+   "category": "other",
+   "vendor": "Gardens by the Bay",
+   "description": "Out-of-hours venue access fee",
+   "amount": 8200,
+   "phase": "installation",
+   "tag_status": "tagged",
+   "driver": {
+    "cause": "site_restriction",
+    "incident": "INC-203",
+    "note": "Charged because works ran outside standard hours."
+   }
+  }
+ ],
+ "CAUSE_LABEL": {
+  "price_increase": "Supplier reprice",
+  "late_delivery": "Late delivery",
+  "site_restriction": "Site access restriction",
+  "scope_change": "Client scope change",
+  "rework": "Rework / replacement",
+  "expedite": "Expedited to recover schedule",
+  "estimate_not_quote": "Committed on estimate, not a firm quote",
+  "no_reference": "No project reference on document",
+  "site_match_only": "Attributed by site match alone"
+ },
+ "INCIDENTS": [
+  {
+   "id": "INC-001",
+   "project_id": "PRJ-001",
+   "date": "2026-06-10",
+   "kind": "late_delivery",
+   "title": "LED module delivery received 8 days after order due date",
+   "doc": "Goods Receipt PO",
+   "ref": "GRPO-4471",
+   "docs": [
+    {
+     "type": "Purchase Order",
+     "ref": "PO-2205",
+     "note": "due 2026-06-02"
+    },
+    {
+     "type": "Goods Receipt PO",
+     "ref": "GRPO-4471",
+     "note": "posted 2026-06-10 — 8 days late"
+    },
+    {
+     "type": "A/P Invoice",
+     "ref": "API-7740",
+     "note": "BrightLite Displays, S$58,200"
+    }
+   ],
+   "ot_hours": 210,
+   "ot_by_phase": {
+    "installation": 210
+   },
+   "txnIds": [
+    "PO-2205",
+    "AP-8834"
+   ],
+   "detail": "The installation window did not move, so the crew absorbed the delay. Replacement strip was expedited under AP-8834 to keep the arch lighting on programme."
+  },
+  {
+   "id": "INC-002",
+   "project_id": "PRJ-001",
+   "date": "2026-06-24",
+   "kind": "scope_change",
+   "title": "Client added 3 arch spans after fabrication had started",
+   "doc": "Sales Order amendment",
+   "ref": "SO-1180 rev 2",
+   "docs": [
+    {
+     "type": "Sales Order",
+     "ref": "SO-1180 rev 2",
+     "note": "amended 2026-06-24, +3 arch spans"
+    },
+    {
+     "type": "Purchase Order",
+     "ref": "PO-2455",
+     "note": "raised against the amendment, S$109,300"
+    }
+   ],
+   "ot_hours": 180,
+   "ot_by_phase": {
+    "fabrication": 60,
+    "installation": 120
+   },
+   "txnIds": [
+    "PO-2455"
+   ],
+   "detail": "The amendment was accepted without a matching change to the contract value, so the added scope lands entirely on cost."
+  },
+  {
+   "id": "INC-003",
+   "project_id": "PRJ-001",
+   "date": "2026-05-19",
+   "kind": "rework",
+   "title": "Backdrop fabric batch returned as faulty, panels re-made",
+   "doc": "Goods Return",
+   "ref": "GRTN-2210",
+   "docs": [
+    {
+     "type": "Goods Return",
+     "ref": "GRTN-2210",
+     "note": "Nova Fabric Co., colour-fast failure"
+    },
+    {
+     "type": "A/P Credit Memo",
+     "ref": "ACM-0885",
+     "note": "credit received in full"
+    },
+    {
+     "type": "Purchase Order",
+     "ref": "PO-2214",
+     "note": "replacement batch, S$41,500"
+    }
+   ],
+   "ot_hours": 140,
+   "ot_by_phase": {
+    "fabrication": 80,
+    "installation": 60
+   },
+   "txnIds": [
+    "PO-2214"
+   ],
+   "detail": "The material was credited in full, so the loss is not in material spend — it is in the 140 hours spent re-making and re-hanging the panels."
+  },
+  {
+   "id": "INC-004",
+   "project_id": "PRJ-001",
+   "date": "2026-06-28",
+   "kind": "site_restriction",
+   "title": "Orchard Road permit restricted works to 22:00–06:00",
+   "doc": "Service Call",
+   "ref": "SVC-337",
+   "docs": [
+    {
+     "type": "Service Call",
+     "ref": "SVC-337",
+     "note": "logged by site supervisor, 2026-06-28"
+    },
+    {
+     "type": "Purchase Order",
+     "ref": "OTH-901",
+     "note": "permit & safety compliance"
+    }
+   ],
+   "ot_hours": 85,
+   "ot_by_phase": {
+    "installation": 30,
+    "event": 55
+   },
+   "txnIds": [
+    "OTH-901"
+   ],
+   "detail": "Night-only access was a known condition of the road-closure permit. It was priced as normal hours in the budget, and worked as overtime."
+  },
+  {
+   "id": "INC-005",
+   "project_id": "PRJ-001",
+   "date": null,
+   "kind": "unexplained",
+   "title": "Overtime with no supporting record in SAP B1",
+   "doc": null,
+   "ref": null,
+   "docs": [],
+   "ot_hours": 35,
+   "ot_by_phase": {
+    "design": 10,
+    "procurement": 25
+   },
+   "txnIds": [],
+   "detail": "35 hours carry no incident, amendment or service call. This is stated rather than absorbed — an unexplained residual is a finding, not a rounding error."
+  },
+  {
+   "id": "INC-101",
+   "project_id": "PRJ-002",
+   "date": "2025-06-12",
+   "kind": "late_delivery",
+   "title": "LED module delivery received 11 days after order due date",
+   "doc": "Goods Receipt PO",
+   "ref": "GRPO-3388",
+   "docs": [
+    {
+     "type": "Purchase Order",
+     "ref": "PO-1915",
+     "note": "due 2025-06-01"
+    },
+    {
+     "type": "Goods Receipt PO",
+     "ref": "GRPO-3388",
+     "note": "posted 2025-06-12 — 11 days late"
+    }
+   ],
+   "ot_hours": 260,
+   "ot_by_phase": {
+    "installation": 260
+   },
+   "txnIds": [
+    "PO-1915",
+    "PO-1975"
+   ],
+   "detail": "The identical failure recurred on the 2026 job with the same supplier. Replacement stock was expedited under PO-1975."
+  },
+  {
+   "id": "INC-102",
+   "project_id": "PRJ-002",
+   "date": "2025-06-20",
+   "kind": "scope_change",
+   "title": "Canopy run extended after installation began",
+   "doc": "Sales Order amendment",
+   "ref": "SO-0940 rev 3",
+   "docs": [
+    {
+     "type": "Sales Order",
+     "ref": "SO-0940 rev 3",
+     "note": "amended 2025-06-20"
+    }
+   ],
+   "ot_hours": 195,
+   "ot_by_phase": {
+    "fabrication": 65,
+    "installation": 130
+   },
+   "txnIds": [
+    "PO-1930"
+   ],
+   "detail": "Second consecutive festive job where scope moved after fabrication started."
+  },
+  {
+   "id": "INC-103",
+   "project_id": "PRJ-002",
+   "date": "2025-05-28",
+   "kind": "rework",
+   "title": "Fixing batch returned — thread tolerance out of spec",
+   "doc": "Goods Return",
+   "ref": "GRTN-1704",
+   "docs": [
+    {
+     "type": "Goods Return",
+     "ref": "GRTN-1704",
+     "note": "SinCo Hardware"
+    },
+    {
+     "type": "A/P Credit Memo",
+     "ref": "ACM-0611",
+     "note": "credit received"
+    }
+   ],
+   "ot_hours": 145,
+   "ot_by_phase": {
+    "fabrication": 100,
+    "installation": 45
+   },
+   "txnIds": [
+    "PO-1948"
+   ],
+   "detail": "Credited in full; the cost is the re-drilling and re-fixing labour."
+  },
+  {
+   "id": "INC-104",
+   "project_id": "PRJ-002",
+   "date": "2025-07-02",
+   "kind": "site_restriction",
+   "title": "Two consecutive rain nights lost on the installation programme",
+   "doc": "Service Call",
+   "ref": "SVC-201",
+   "docs": [
+    {
+     "type": "Service Call",
+     "ref": "SVC-201",
+     "note": "logged 2025-07-02"
+    }
+   ],
+   "ot_hours": 130,
+   "ot_by_phase": {
+    "installation": 70,
+    "event": 60
+   },
+   "txnIds": [],
+   "detail": "Recovered by working the following two nights at overtime rates."
+  },
+  {
+   "id": "INC-105",
+   "project_id": "PRJ-002",
+   "date": null,
+   "kind": "unexplained",
+   "title": "Overtime with no supporting record in SAP B1",
+   "doc": null,
+   "ref": null,
+   "docs": [],
+   "ot_hours": 50,
+   "ot_by_phase": {
+    "design": 12,
+    "procurement": 28,
+    "event": 10
+   },
+   "txnIds": [],
+   "detail": "50 hours unexplained on a closed job — the record can no longer be reconstructed."
+  },
+  {
+   "id": "INC-201",
+   "project_id": "PRJ-003",
+   "date": "2025-11-14",
+   "kind": "scope_change",
+   "title": "Venue brought the installation window forward by 6 days",
+   "doc": "Sales Order amendment",
+   "ref": "SO-0712 rev 2",
+   "docs": [
+    {
+     "type": "Sales Order",
+     "ref": "SO-0712 rev 2",
+     "note": "amended 2025-11-14"
+    }
+   ],
+   "ot_hours": 240,
+   "ot_by_phase": {
+    "fabrication": 70,
+    "installation": 170
+   },
+   "txnIds": [],
+   "detail": "The whole programme compressed. This single amendment is the largest driver of the 22% labour overrun."
+  },
+  {
+   "id": "INC-202",
+   "project_id": "PRJ-003",
+   "date": "2025-11-22",
+   "kind": "late_delivery",
+   "title": "Fabric delivery received 7 days after order due date",
+   "doc": "Goods Receipt PO",
+   "ref": "GRPO-2901",
+   "docs": [
+    {
+     "type": "Purchase Order",
+     "ref": "PO-1526",
+     "note": "due 2025-11-15"
+    },
+    {
+     "type": "Goods Receipt PO",
+     "ref": "GRPO-2901",
+     "note": "posted 2025-11-22"
+    }
+   ],
+   "ot_hours": 165,
+   "ot_by_phase": {
+    "fabrication": 48,
+    "installation": 117
+   },
+   "txnIds": [
+    "PO-1526",
+    "PO-1562"
+   ],
+   "detail": "Landed into an already-compressed window, compounding INC-201."
+  },
+  {
+   "id": "INC-203",
+   "project_id": "PRJ-003",
+   "date": "2025-11-30",
+   "kind": "site_restriction",
+   "title": "Venue access restricted to 22:00–06:00 for public safety",
+   "doc": "Service Call",
+   "ref": "SVC-118",
+   "docs": [
+    {
+     "type": "Service Call",
+     "ref": "SVC-118",
+     "note": "logged 2025-11-30"
+    }
+   ],
+   "ot_hours": 150,
+   "ot_by_phase": {
+    "installation": 100,
+    "event": 50
+   },
+   "txnIds": [
+    "OTH3-736",
+    "TS3-I-02"
+   ],
+   "detail": "A standing condition at this venue. It recurs on every Gardens by the Bay job and should be priced as overtime from the outset."
+  },
+  {
+   "id": "INC-204",
+   "project_id": "PRJ-003",
+   "date": null,
+   "kind": "unexplained",
+   "title": "Overtime with no supporting record in SAP B1",
+   "doc": null,
+   "ref": null,
+   "docs": [],
+   "ot_hours": 65,
+   "ot_by_phase": {
+    "design": 8,
+    "procurement": 20,
+    "fabrication": 0,
+    "installation": 37
+   },
+   "txnIds": [],
+   "detail": "65 hours unexplained."
+  }
+ ],
+ "LABOUR_BY_PROJECT": {
+  "PRJ-001": {
+   "summary": {
+    "craftsmen": 10,
+    "normal_hours": 4200,
+    "overtime_hours": 650,
+    "total_hours": 4850,
+    "hourly_rate": 28,
+    "labour_cost": 135800
+   },
+   "ot_by_phase": {
+    "design": 10,
+    "procurement": 25,
+    "fabrication": 140,
+    "installation": 420,
+    "event": 55
+   },
+   "crew": [
+    {
+     "id": "CR-01",
+     "name": "Tan Wei Ming",
+     "role": "Site Supervisor",
+     "phase": "installation",
+     "normal": 480,
+     "ot": 62
+    },
+    {
+     "id": "CR-02",
+     "name": "Rahman Bin Yusof",
+     "role": "Lead Fabricator",
+     "phase": "fabrication",
+     "normal": 470,
+     "ot": 70
+    },
+    {
+     "id": "CR-03",
+     "name": "Lim Chee Keong",
+     "role": "Fabricator",
+     "phase": "fabrication",
+     "normal": 450,
+     "ot": 58
+    },
+    {
+     "id": "CR-04",
+     "name": "Muthu Kumar",
+     "role": "Fabricator",
+     "phase": "fabrication",
+     "normal": 440,
+     "ot": 54
+    },
+    {
+     "id": "CR-05",
+     "name": "Ng Jia Hao",
+     "role": "Rigger",
+     "phase": "installation",
+     "normal": 420,
+     "ot": 88
+    },
+    {
+     "id": "CR-06",
+     "name": "Suresh Pillai",
+     "role": "Rigger",
+     "phase": "installation",
+     "normal": 410,
+     "ot": 84
+    },
+    {
+     "id": "CR-07",
+     "name": "Chandran Raju",
+     "role": "LED Electrician",
+     "phase": "installation",
+     "normal": 400,
+     "ot": 76
+    },
+    {
+     "id": "CR-08",
+     "name": "Goh Boon Hock",
+     "role": "Carpenter",
+     "phase": "fabrication",
+     "normal": 390,
+     "ot": 60
+    },
+    {
+     "id": "CR-09",
+     "name": "Zulkifli Hassan",
+     "role": "Painter / Finisher",
+     "phase": "fabrication",
+     "normal": 380,
+     "ot": 48
+    },
+    {
+     "id": "CR-10",
+     "name": "Arun Prasad",
+     "role": "Installer",
+     "phase": "installation",
+     "normal": 360,
+     "ot": 50
+    }
+   ]
+  },
+  "PRJ-002": {
+   "summary": {
+    "craftsmen": 11,
+    "normal_hours": 4400,
+    "overtime_hours": 780,
+    "total_hours": 5180,
+    "hourly_rate": 27,
+    "labour_cost": 139860
+   },
+   "ot_by_phase": {
+    "design": 12,
+    "procurement": 28,
+    "fabrication": 165,
+    "installation": 505,
+    "event": 70
+   },
+   "crew": [
+    {
+     "id": "CR-01",
+     "name": "Tan Wei Ming",
+     "role": "Site Supervisor",
+     "phase": "installation",
+     "normal": 460,
+     "ot": 78
+    },
+    {
+     "id": "CR-02",
+     "name": "Rahman Bin Yusof",
+     "role": "Lead Fabricator",
+     "phase": "fabrication",
+     "normal": 450,
+     "ot": 84
+    },
+    {
+     "id": "CR-03",
+     "name": "Lim Chee Keong",
+     "role": "Fabricator",
+     "phase": "fabrication",
+     "normal": 430,
+     "ot": 72
+    },
+    {
+     "id": "CR-04",
+     "name": "Muthu Kumar",
+     "role": "Fabricator",
+     "phase": "fabrication",
+     "normal": 420,
+     "ot": 68
+    },
+    {
+     "id": "CR-05",
+     "name": "Ng Jia Hao",
+     "role": "Rigger",
+     "phase": "installation",
+     "normal": 410,
+     "ot": 96
+    },
+    {
+     "id": "CR-06",
+     "name": "Suresh Pillai",
+     "role": "Rigger",
+     "phase": "installation",
+     "normal": 400,
+     "ot": 92
+    },
+    {
+     "id": "CR-07",
+     "name": "Chandran Raju",
+     "role": "LED Electrician",
+     "phase": "installation",
+     "normal": 390,
+     "ot": 80
+    },
+    {
+     "id": "CR-08",
+     "name": "Goh Boon Hock",
+     "role": "Carpenter",
+     "phase": "fabrication",
+     "normal": 380,
+     "ot": 64
+    },
+    {
+     "id": "CR-09",
+     "name": "Zulkifli Hassan",
+     "role": "Painter / Finisher",
+     "phase": "fabrication",
+     "normal": 370,
+     "ot": 56
+    },
+    {
+     "id": "CR-10",
+     "name": "Arun Prasad",
+     "role": "Installer",
+     "phase": "installation",
+     "normal": 360,
+     "ot": 52
+    },
+    {
+     "id": "CR-11",
+     "name": "Kamal Ariffin",
+     "role": "Installer",
+     "phase": "installation",
+     "normal": 330,
+     "ot": 38
+    }
+   ]
+  },
+  "PRJ-003": {
+   "summary": {
+    "craftsmen": 8,
+    "normal_hours": 3150,
+    "overtime_hours": 620,
+    "total_hours": 3770,
+    "hourly_rate": 27,
+    "labour_cost": 101790
+   },
+   "ot_by_phase": {
+    "design": 8,
+    "procurement": 20,
+    "fabrication": 118,
+    "installation": 424,
+    "event": 50
+   },
+   "crew": [
+    {
+     "id": "CR-01",
+     "name": "Tan Wei Ming",
+     "role": "Site Supervisor",
+     "phase": "installation",
+     "normal": 430,
+     "ot": 76
+    },
+    {
+     "id": "CR-02",
+     "name": "Rahman Bin Yusof",
+     "role": "Lead Fabricator",
+     "phase": "fabrication",
+     "normal": 420,
+     "ot": 88
+    },
+    {
+     "id": "CR-05",
+     "name": "Ng Jia Hao",
+     "role": "Rigger",
+     "phase": "installation",
+     "normal": 410,
+     "ot": 104
+    },
+    {
+     "id": "CR-06",
+     "name": "Suresh Pillai",
+     "role": "Rigger",
+     "phase": "installation",
+     "normal": 400,
+     "ot": 98
+    },
+    {
+     "id": "CR-07",
+     "name": "Chandran Raju",
+     "role": "LED Electrician",
+     "phase": "installation",
+     "normal": 390,
+     "ot": 82
+    },
+    {
+     "id": "CR-03",
+     "name": "Lim Chee Keong",
+     "role": "Fabricator",
+     "phase": "fabrication",
+     "normal": 380,
+     "ot": 66
+    },
+    {
+     "id": "CR-08",
+     "name": "Goh Boon Hock",
+     "role": "Carpenter",
+     "phase": "fabrication",
+     "normal": 370,
+     "ot": 58
+    },
+    {
+     "id": "CR-10",
+     "name": "Arun Prasad",
+     "role": "Installer",
+     "phase": "installation",
+     "normal": 350,
+     "ot": 48
+    }
+   ]
+  }
+ },
+ "RISK_ALERTS": [
+  {
+   "id": "RA-1",
+   "project_id": "PRJ-001",
+   "severity": "high",
+   "status": "open",
+   "category": "material",
+   "what_happened": "Material spending is 20% above budget",
+   "why_it_matters": "Largest single driver of margin erosion this period",
+   "expected_impact_sgd": -60000,
+   "recommended_action": "Review latest purchases before further orders are placed.",
+   "detection": "Category actual exceeded budget by more than 15% — the threshold for a high-severity cost alert.",
+   "evidenceIds": [
+    "PO-2381",
+    "PO-2455",
+    "AP-8834"
+   ],
+   "evidenceNote": "PO-2381 is the only line with an original quote on file, and it came in 34% above it. PO-2455 carries no quote reference at all."
+  },
+  {
+   "id": "RA-2",
+   "project_id": "PRJ-001",
+   "severity": "medium",
+   "status": "open",
+   "category": "labour",
+   "what_happened": "Installation overtime is increasing labour cost",
+   "why_it_matters": "420 of 650 OT hours (65%) concentrated in Installation",
+   "expected_impact_sgd": -15000,
+   "recommended_action": "Review installation schedule and manpower allocation.",
+   "detection": "Overtime share in a single phase exceeded 50% of the project total.",
+   "evidenceIds": [
+    "TS-INST-01",
+    "TS-INST-02"
+   ],
+   "crewEvidence": true,
+   "evidenceNote": "Three of the four highest-overtime crew members are on installation duties. No headcount was added — the same crew absorbed the compression."
+  },
+  {
+   "id": "RA-3",
+   "project_id": "PRJ-001",
+   "severity": "medium",
+   "status": "open",
+   "category": null,
+   "what_happened": "Open purchase commitments may raise final cost",
+   "why_it_matters": "SGD 85K in open POs not yet reflected in actuals",
+   "expected_impact_sgd": null,
+   "impact_note": "could push margin below 22%",
+   "recommended_action": "Confirm outstanding PO deliveries and pricing before close.",
+   "detection": "Committed-but-unbilled purchase orders exceed 5% of budgeted cost.",
+   "evidenceIds": [],
+   "evidenceNote": "These commitments are allocated pro-rata to each category’s budget share to produce the forecast column — they are not yet actual spend."
+  }
+ ],
+ "REFERENCE_FACTS": {
+  "PRJ-002": {
+   "subcontractor_overrun_pct": 19,
+   "labour_ot_overrun_pct": 18,
+   "note": "Chronic overrun pattern for this project type."
+  },
+  "PRJ-003": {
+   "subcontractor_overrun_pct": 8,
+   "labour_ot_overrun_pct": 22,
+   "note": "Worse OT overrun — compressed install window."
+  }
+ },
+ "QUOTE_REQUEST": {
+  "id": "QR-2027-014",
+  "customer": "Gardens by the Bay",
+  "project_type": "festive_installation",
+  "scope_description": "CNY festive installation, similar footprint to prior Gardens by the Bay and Orchard Road festive jobs.",
+  "target_dates": "Jan 5 – Feb 10, 2027",
+  "reference_project_ids": [
+   "PRJ-002",
+   "PRJ-003"
+  ],
+  "match_confidence": "high",
+  "match_confidence_note": "2 close matches on project type and scope",
+  "suggested_budget_by_category": {
+   "material": 305000,
+   "labour": 268000,
+   "subcontractor": 172000,
+   "logistics": 92000,
+   "other": 61000
+  },
+  "base_budget_by_category_no_contingency": {
+   "material": 305000,
+   "labour": 227000,
+   "subcontractor": 148000,
+   "logistics": 92000,
+   "other": 61000
+  },
+  "risk_notes": [
+   "Installation overtime ran 18–22% over budget on both reference jobs — recommend pricing in a ~12–15% labour contingency.",
+   "Subcontractor costs ran 8–19% over on reference jobs — get a firm quote before committing, not a rough estimate."
+  ],
+  "target_margin_pct_default": 28
+ }
+}

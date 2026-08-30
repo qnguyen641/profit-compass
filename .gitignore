@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.env
+backend/data/app.db
+node_modules/
+*.tar.gz
