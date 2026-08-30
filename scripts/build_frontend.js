@@ -149,6 +149,49 @@ mustReplace('<div class="section-label">Suggested draft</div>',
 mustReplace('Matched <b>${QUOTE_REQUEST.reference_project_ids.length} of ${cands.length}</b> past jobs on project type and scope. Extracted overrun patterns are priced into the draft.',
             'Matched <b>${QUOTE_REQUEST.reference_project_ids.length} of ${cands.length}</b> past jobs on project type and scope. Their overrun patterns are priced into the quote on the left.');
 
+/* ---- 2f2. generate-quote flow: nothing until you press the button ------- */
+// (a) no autoplay on entering the screen — the scan runs only when asked
+mustReplace("  if(document.getElementById('qsearch') && !state.quoteSearched) setTimeout(playQuoteSearch, 140);\n", '');
+// (b) when the run finishes, re-render: the quote reveals, the button flips
+//     to Regenerate, and a run-complete line appears
+mustReplace(
+  "searchTimers.push(setTimeout(()=>{ wrap.classList.add('revealed'); state.quoteSearched = true; }, rows.length*RUN + 340));",
+  "searchTimers.push(setTimeout(()=>{ state.quoteSearched = true; render(); }, rows.length*RUN + 340));");
+mustReplace(
+  "if(reduce){ rows.forEach(r=>r.classList.add('done')); wrap.classList.add('revealed'); state.quoteSearched = true; return; }",
+  "if(reduce){ state.quoteSearched = true; render(); return; }");
+// (c) run-complete indicator under the button
+mustReplace(
+  '<button class="btn primary" id="runSearchBtn" style="width:100%;justify-content:center">${iconCompass(\'currentColor\')} ${done?\'Regenerate quote\':\'Generate quote\'}</button>',
+  '<button class="btn primary" id="runSearchBtn" style="width:100%;justify-content:center">${iconCompass(\'currentColor\')} ${done?\'Regenerate quote\':\'Generate quote\'}</button>\n'
+  + '        ${done?`<div class="mono" style="display:flex;align-items:center;gap:6px;font-size:9.5px;letter-spacing:.06em;color:var(--good);margin-top:9px;text-transform:uppercase"><span style="width:13px;height:13px;display:inline-flex">${iconCheck()}</span>Run complete · built from ${QUOTE_REQUEST.reference_project_ids.length} delivered jobs</div>`:\'\'}');
+// (d) the quote card is empty until generated; once generated it leads with
+//     the contract value as the headline
+{
+  const csM = '<div style="display:flex;flex-direction:column;gap:9px;margin-bottom:10px">${suggestBars}</div>';
+  const ceM = '<div class="footer-note">Drafted from historical evidence. Review before sending.</div>';
+  const cs = mustIndex(html, csM);
+  const ce = mustIndex(html, ceM) + ceM.length;
+  const content = html.slice(cs, ce);
+  const headline =
+    '<div style="margin-bottom:13px;padding-bottom:12px;border-bottom:1px solid var(--border)">'
+    + '<div class="num" id="quoteHeadVal" style="font-family:var(--font-display);font-size:27px;font-weight:700;letter-spacing:-.01em">${fmtSGD(contractVal)}</div>'
+    + '<div class="mono" style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);margin-top:2px">Suggested contract value · <span id="quoteHeadMargin">${quoteMarginPct}</span>% target margin</div>'
+    + '</div>\n        ';
+  const placeholder =
+    '<div class="empty-note" style="padding:30px 16px;text-align:center;line-height:1.6">'
+    + 'No quote yet.<br/>Set the target margin, then press <b>Generate quote</b> — '
+    + 'the draft is built category by category from the actuals of your delivered jobs.'
+    + '</div>';
+  html = html.slice(0, cs) + '${done ? `' + headline + content + '` : `' + placeholder + '`}' + html.slice(ce);
+}
+// (e) margin changes move the headline too, not just the small formula echo
+mustReplace(
+  "    const out = document.getElementById('contractValOut'); if(out) out.textContent = fmtSGD(suggestedContractValue(n));",
+  "    const out = document.getElementById('contractValOut'); if(out) out.textContent = fmtSGD(suggestedContractValue(n));\n"
+  + "    const hv = document.getElementById('quoteHeadVal'); if(hv) hv.textContent = fmtSGD(suggestedContractValue(n));\n"
+  + "    const hm = document.getElementById('quoteHeadMargin'); if(hm) hm.textContent = n;");
+
 /* ---- 2g. finished-job evidence drawer: facts only, no lecturing --------- */
 mustReplace(`
         <p class="ad-p" style="margin-top:12px">\${PROJECT_LESSON[pid]||''}</p>`, '');

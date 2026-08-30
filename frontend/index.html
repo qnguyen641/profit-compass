@@ -2000,10 +2000,12 @@ function renderScreenD(){
           <div class="mi-scale"><span>10%</span><span>45%</span></div>
         </div>
         <button class="btn primary" id="runSearchBtn" style="width:100%;justify-content:center">${iconCompass('currentColor')} ${done?'Regenerate quote':'Generate quote'}</button>
+        ${done?`<div class="mono" style="display:flex;align-items:center;gap:6px;font-size:9.5px;letter-spacing:.06em;color:var(--good);margin-top:9px;text-transform:uppercase"><span style="width:13px;height:13px;display:inline-flex">${iconCheck()}</span>Run complete · built from ${QUOTE_REQUEST.reference_project_ids.length} delivered jobs</div>`:''}
       </div>
 
       <div class="card pad">
         <div class="section-label">Generated quote</div>
+        ${done ? `<div style="margin-bottom:13px;padding-bottom:12px;border-bottom:1px solid var(--border)"><div class="num" id="quoteHeadVal" style="font-family:var(--font-display);font-size:27px;font-weight:700;letter-spacing:-.01em">${fmtSGD(contractVal)}</div><div class="mono" style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);margin-top:2px">Suggested contract value · <span id="quoteHeadMargin">${quoteMarginPct}</span>% target margin</div></div>
         <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:10px">${suggestBars}</div>
         <div class="legend"><span><i style="color:var(--text-faint)"></i>Dashed mark = cost before contingency</span></div>
         <div class="section-label" style="margin-top:14px">Where the money goes</div>
@@ -2017,7 +2019,7 @@ function renderScreenD(){
           ${QUOTE_REQUEST.risk_notes.map(r=>`<li>${iconAlert()}<span>${r}</span></li>`).join('')}
         </ul>
         <button class="btn primary" style="width:100%;justify-content:center;margin-top:14px" id="approveQuoteBtn">Approve &amp; send to Sales</button>
-        <div class="footer-note">Drafted from historical evidence. Review before sending.</div>
+        <div class="footer-note">Drafted from historical evidence. Review before sending.</div>` : `<div class="empty-note" style="padding:30px 16px;text-align:center;line-height:1.6">No quote yet.<br/>Set the target margin, then press <b>Generate quote</b> — the draft is built category by category from the actuals of your delivered jobs.</div>`}
       </div>
 
       <div>
@@ -2047,7 +2049,7 @@ function playQuoteSearch(){
   searchTimers.forEach(clearTimeout); searchTimers = [];
   const rows = [...wrap.querySelectorAll('.sc-row')];
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(reduce){ rows.forEach(r=>r.classList.add('done')); wrap.classList.add('revealed'); state.quoteSearched = true; return; }
+  if(reduce){ state.quoteSearched = true; render(); return; }
   wrap.classList.remove('revealed');
   rows.forEach(r=>r.classList.remove('done','active'));
   const RUN = 780;
@@ -2055,7 +2057,7 @@ function playQuoteSearch(){
     searchTimers.push(setTimeout(()=>r.classList.add('active'), i*RUN));
     searchTimers.push(setTimeout(()=>{ r.classList.remove('active'); r.classList.add('done'); }, i*RUN + 480));
   });
-  searchTimers.push(setTimeout(()=>{ wrap.classList.add('revealed'); state.quoteSearched = true; }, rows.length*RUN + 340));
+  searchTimers.push(setTimeout(()=>{ state.quoteSearched = true; render(); }, rows.length*RUN + 340));
 }
 
 /* Evidence drawer — the key facts of one reference job, with a route into its
@@ -3161,6 +3163,8 @@ function bindScreenEvents(){
     if(from!=='input'  && mInput)  mInput.value  = n;
     const echo = document.getElementById('marginEcho'); if(echo) echo.textContent = n;
     const out = document.getElementById('contractValOut'); if(out) out.textContent = fmtSGD(suggestedContractValue(n));
+    const hv = document.getElementById('quoteHeadVal'); if(hv) hv.textContent = fmtSGD(suggestedContractValue(n));
+    const hm = document.getElementById('quoteHeadMargin'); if(hm) hm.textContent = n;
   }
   if(mSlider) mSlider.addEventListener('input', e=>setMargin(e.target.value,'slider'));
   if(mInput){
@@ -3169,7 +3173,6 @@ function bindScreenEvents(){
   }
   const runSearch = document.getElementById('runSearchBtn');
   if(runSearch) runSearch.addEventListener('click', ()=>{ state.quoteSearched=false; playQuoteSearch(); });
-  if(document.getElementById('qsearch') && !state.quoteSearched) setTimeout(playQuoteSearch, 140);
   document.querySelectorAll('[data-evidence-open]').forEach(el=>el.addEventListener('click', e=>{
     e.stopPropagation(); openEvidenceDrawer(el.dataset.evidenceOpen);
   }));
